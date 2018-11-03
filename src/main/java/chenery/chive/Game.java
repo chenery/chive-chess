@@ -16,7 +16,7 @@ public class Game {
     private Player white;
     private Player black;
     private GameHistory history;
-    private Player playerToMoveNext;
+    private Colour nextToMove;
 
     public Game() {
         // setup all the pieces on the board
@@ -25,19 +25,20 @@ public class Game {
         // setup the players
         white = new Player(Colour.WHITE);
         black = new Player(Colour.BLACK);
-        playerToMoveNext = white;
+        nextToMove = Colour.WHITE;
 
         history = new GameHistory();
     }
 
     // todo this signature looks wrong
     // todo decide of validation during instantiation or method call)
-    public MoveResponse move(Move move) {
+    public MoveResponse move(Colour colour, BoardLocation from, BoardLocation to) {
 
         // valid move
+        Move move = new Move(colour, from, to, history);
 
         // -> correct player
-        if (!move.getPlayer().equals(this.playerToMoveNext())) {
+        if (!move.getColour().equals(this.getNextToMove())) {
             return new MoveResponse(Status.INVALID);
         }
 
@@ -49,12 +50,12 @@ public class Game {
         final Piece pieceMoving = board.getPieceAt(move.getFrom()).get();
 
         // -> the piece at 'from' is owned by the correct player todo move this expression to a helper.
-        if (!move.getPlayer().getColour().equals(pieceMoving.getColour())) {
+        if (!move.getColour().equals(pieceMoving.getColour())) {
             return new MoveResponse(Status.INVALID);
         }
 
         // -> the 'to' board location is a valid move for the piece
-        if (!pieceMoving.canMove(move.getFrom(), move.getTo())) {
+        if (!pieceMoving.canMove(move)) {
             return new MoveResponse(Status.INVALID);
         }
 
@@ -79,13 +80,13 @@ public class Game {
             return new MoveResponse(Status.CHECKMATE);
         }
 
-        playerToMoveNext = playerToMoveNext == white ? black : white;
+        nextToMove = nextToMove == Colour.WHITE ? Colour.BLACK : Colour.WHITE;
 
         return new MoveResponse(Status.OK);
     }
 
-    public Player playerToMoveNext() {
-        return playerToMoveNext;
+    public Colour getNextToMove() {
+        return nextToMove;
     }
 
     public Player getWhite() {

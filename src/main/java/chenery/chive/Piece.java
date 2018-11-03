@@ -4,12 +4,14 @@ import java.util.Objects;
 
 /**
  * todo a piece should move?
+ *
+ * todo maybe you can get all available moves for a piece given a board
  */
 public abstract class Piece {
 
     private Colour colour;
 
-    public abstract boolean canMove(BoardLocation from, BoardLocation to);
+    public abstract boolean canMove(Move move);
 
     public Piece setColour(Colour colour) {
         this.colour = colour;

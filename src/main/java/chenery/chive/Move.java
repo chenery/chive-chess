@@ -7,18 +7,53 @@ package chenery.chive;
  *  todo include castling (king or queen side)
  */
 public class Move {
-    private Player player;
+    private Colour colour;
     private BoardLocation from;
     private BoardLocation to;
+    private GameHistory gameHistory;
 
-    public Move(Player player, BoardLocation from, BoardLocation to) {
-        this.player = player;
+    public Move(Colour colour, BoardLocation from, BoardLocation to, GameHistory gameHistory) {
+        this.colour = colour;
         this.from = from;
         this.to = to;
+        this.gameHistory = gameHistory;
     }
 
-    public Player getPlayer() {
-        return player;
+    public int rowsMoved() {
+        return Math.abs(from.getRow().ordinal() - to.getRow().ordinal());
+    }
+
+    public int columnsMoved() {
+        return Math.abs(from.getColumn().ordinal() - to.getColumn().ordinal());
+    }
+
+    public RowDirection rowDirection() {
+        if (from.getRow().ordinal() == to.getRow().ordinal()) {
+            return RowDirection.NONE;
+        }
+
+        return from.getRow().ordinal() < to.getRow().ordinal() ? RowDirection.UP : RowDirection.DOWN;
+    }
+
+    public ColumnDirection columnDirection() {
+        if (from.getColumn().ordinal() == to.getColumn().ordinal()) {
+            return ColumnDirection.NONE;
+        }
+
+        return from.getColumn().ordinal() < to.getColumn().ordinal() ? ColumnDirection.RIGHT : ColumnDirection.LEFT;
+    }
+
+    public boolean isForwardMove() {
+        return (this.rowDirection() == RowDirection.UP && this.getColour() == Colour.WHITE)
+                || (this.rowDirection() == RowDirection.DOWN && this.getColour() == Colour.BLACK);
+    }
+
+    public boolean isFirstMove() {
+        return this.gameHistory.isFirstMove(this.getColour());
+    }
+
+    public Colour getColour() {
+        return colour;
     }
 
     public BoardLocation getFrom() {

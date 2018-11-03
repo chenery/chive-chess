@@ -19,7 +19,7 @@ public class GameTest {
         Player white = game.getWhite();
         Player black = game.getBlack();
 
-        assertThat(game.playerToMoveNext()).isEqualTo(white);
+        assertThat(game.getNextToMove()).isEqualTo(Colour.WHITE);
         assertThat(black).isNotNull();
     }
 
@@ -28,8 +28,8 @@ public class GameTest {
 
         Game game = new Game();
 
-        MoveResponse moveResponse = game.move(new Move(game.getWhite(), new BoardLocation(Column.d, Row.TWO),
-                new BoardLocation(Column.d, Row.THREE)));
+        MoveResponse moveResponse = game.move(Colour.WHITE, new BoardLocation(Column.d, Row.TWO),
+                new BoardLocation(Column.d, Row.THREE));
         assertThat(moveResponse.getStatus()).isEqualTo(Status.OK);
     }
 
@@ -39,8 +39,8 @@ public class GameTest {
 
         Game game = new Game();
 
-        MoveResponse moveResponse = game.move(new Move(game.getWhite(), new BoardLocation(Column.d, Row.TWO),
-                new BoardLocation(Column.d, Row.FIVE)));
+        MoveResponse moveResponse = game.move(Colour.WHITE, new BoardLocation(Column.d, Row.TWO),
+                new BoardLocation(Column.d, Row.FIVE));
         assertThat(moveResponse.getStatus()).isEqualTo(Status.INVALID);
     }
 }

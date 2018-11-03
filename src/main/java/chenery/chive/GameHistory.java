@@ -12,4 +12,8 @@ public class GameHistory {
     public void recordMove(Move move) {
         this.moveHistory.push(move);
     }
+
+    public boolean isFirstMove(Colour forColour) {
+        return moveHistory.size() < 2;
+    }
 }
