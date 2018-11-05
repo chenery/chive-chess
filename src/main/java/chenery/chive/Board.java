@@ -8,11 +8,19 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * The Board is A data structure that holds the Squares.
+ *
+ * A Square can hold A Piece.  The Square is a concept that should be internal to the board.
+ * - todo consider making Square a static nested class in Board
+ *
+ * The Board does not contain any of the game/piece logic/rules of the game.
+ *
+ *
  *  ROWS x COLS
  *  8 boardSquares and 8 columns
  *
  *                      BLACK
- *          a       b       c           h
+ *          A       B       C           H
  *          col 0, col 1, col 2, ... col 7
  *  8 row: 7
  *  7 row: 6
@@ -43,7 +51,8 @@ public class Board {
             // add the squares to the boardSquares
             for (int j = 0; j < NUM_COLS; j++) {
                 // add 8 squares to the row
-                rowSquares.add(new Square());
+                BoardLocation boardLocation = new BoardLocation(Column.values()[j], Row.values()[i]);
+                rowSquares.add(new Square().setAtBoardLocation(boardLocation));
             }
         }
 
@@ -51,15 +60,27 @@ public class Board {
         setupColour(Colour.BLACK);
     }
 
-    public void applyMove(Move move) {
+    // todo consider what validation is required here?
+    public void applyMove(BoardLocation from, BoardLocation to) {
+        Square fromSquare = getSquareAt(from);
+        Optional<Piece> optionalPieceRemoved = fromSquare.removePiece();
 
+        if (optionalPieceRemoved.isPresent()) {
+            // todo validate overwriting a piece?
+            Square toSquare = getSquareAt(to);
+            toSquare.setPiece(optionalPieceRemoved.get());
+        }
     }
 
     public Optional<Piece> getPieceAt(BoardLocation boardLocation) {
+        Square square = getSquareAt(boardLocation);
+        return square.getPiece();
+    }
+
+    private Square getSquareAt(BoardLocation boardLocation) {
         int boardRowIndex = boardLocation.getRow().ordinal();
         int columnIndex = boardLocation.getColumn().ordinal();
-        Square square = boardSquares.get(boardRowIndex).get(columnIndex);
-        return square.getPiece();
+        return boardSquares.get(boardRowIndex).get(columnIndex);
     }
 
     private void setupColour(Colour colour) {
@@ -69,7 +90,10 @@ public class Board {
         // 8 pawns
         List<Square> row = boardSquares.get(rowIndex);
         for (int i = 0; i < NUM_PAWNS; i++) {
-            row.get(i).withPiece(new Pawn().setColour(colour));
+            Square atSquare = row.get(i);
+            atSquare.setPiece(new Pawn()
+                    .setColour(colour)
+                    .setOriginalLocation(atSquare.getAtBoardLocation()));
         }
 
         // 2 rooks

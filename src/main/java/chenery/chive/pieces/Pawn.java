@@ -32,7 +32,7 @@ public class Pawn extends Piece {
         }
 
 
-        // 3. Can move diagonal - if capturing a piece
+        // 3. Can move diagonal - if capturing A piece
 
         // 4. pawn can turn to any other piece taken? if reaches the end of the board?
 

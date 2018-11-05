@@ -4,9 +4,9 @@ package chenery.chive;
 import chenery.chive.MoveResponse.Status;
 
 /**
- * TODO create a game state class?
+ * TODO create A game state class?
  *
- * TODO create a command line interface
+ * TODO create A command line interface
  *
  * TODO print the board after each move
  */
@@ -42,47 +42,52 @@ public class Game {
             return new MoveResponse(Status.INVALID);
         }
 
-        // -> is there a piece at the from location?
+        // -> is there A piece at the from location?
         if (!board.getPieceAt(move.getFrom()).isPresent()) {
             return new MoveResponse(Status.INVALID);
         }
 
         final Piece pieceMoving = board.getPieceAt(move.getFrom()).get();
 
-        // -> the piece at 'from' is owned by the correct player todo move this expression to a helper.
+        // -> the piece at 'from' is owned by the correct player todo move this expression to A helper.
         if (!move.getColour().equals(pieceMoving.getColour())) {
             return new MoveResponse(Status.INVALID);
         }
 
-        // -> the 'to' board location is a valid move for the piece
+        // -> the 'to' board location is A valid move for the piece
         if (!pieceMoving.canMove(move)) {
             return new MoveResponse(Status.INVALID);
         }
 
         // -> the 'to' board location is either vacant
         if (board.getPieceAt(move.getTo()).isPresent()) {
-            // then 'to' is valid, then occupied by the other player (a capture)
+            // then 'to' is valid, then occupied by the other player (A capture)
 
         }
 
-        // -> the move does not incur a 'check'
+        // -> the move does not incur A 'check'
 
 
 
         // update board
-        board.applyMove(move);
+        board.applyMove(move.getFrom(), move.getTo());
 
         // record move in history
         history.recordMove(move);
 
         // declare winner
-        if (RuleEngine.isWinningMove(move, board)) {
+        if (isWinningMove(move, board)) {
             return new MoveResponse(Status.CHECKMATE);
         }
 
         nextToMove = nextToMove == Colour.WHITE ? Colour.BLACK : Colour.WHITE;
 
         return new MoveResponse(Status.OK);
+    }
+
+    private boolean isWinningMove(Move move, Board board) {
+        // todo decide on this
+        return false;
     }
 
     public Colour getNextToMove() {

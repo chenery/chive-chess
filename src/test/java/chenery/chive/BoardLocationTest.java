@@ -11,6 +11,6 @@ public class BoardLocationTest {
 
     @Test
     public void construct_colIndexRange_ok() {
-        new BoardLocation(Column.a, ONE);
+        new BoardLocation(Column.A, ONE);
     }
 }

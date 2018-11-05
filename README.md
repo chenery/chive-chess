@@ -1,3 +1,3 @@
 A project to demo java object oriented style programming.
 
-- Add code coverage tool
+- Classes - immutable with large constructors or builder style setters?  Use of optional to avoid null pointers?

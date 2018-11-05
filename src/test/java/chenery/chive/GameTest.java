@@ -28,8 +28,8 @@ public class GameTest {
 
         Game game = new Game();
 
-        MoveResponse moveResponse = game.move(Colour.WHITE, new BoardLocation(Column.d, Row.TWO),
-                new BoardLocation(Column.d, Row.THREE));
+        MoveResponse moveResponse = game.move(Colour.WHITE, new BoardLocation(Column.D, Row.TWO),
+                new BoardLocation(Column.D, Row.THREE));
         assertThat(moveResponse.getStatus()).isEqualTo(Status.OK);
     }
 
@@ -39,8 +39,8 @@ public class GameTest {
 
         Game game = new Game();
 
-        MoveResponse moveResponse = game.move(Colour.WHITE, new BoardLocation(Column.d, Row.TWO),
-                new BoardLocation(Column.d, Row.FIVE));
+        MoveResponse moveResponse = game.move(Colour.WHITE, new BoardLocation(Column.D, Row.TWO),
+                new BoardLocation(Column.D, Row.FIVE));
         assertThat(moveResponse.getStatus()).isEqualTo(Status.INVALID);
     }
 }
