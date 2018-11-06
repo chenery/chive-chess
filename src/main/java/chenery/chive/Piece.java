@@ -13,7 +13,7 @@ public abstract class Piece {
     // A way of uniquely identifying the piece when the are multiple instances, e.g. Pawn
     private BoardLocation originalLocation;
 
-    public abstract boolean canMove(Move move);
+    public abstract boolean canMove(MoveContext moveContext);
 
     public Piece setColour(Colour colour) {
         this.colour = colour;
@@ -52,9 +52,7 @@ public abstract class Piece {
 
     @Override
     public String toString() {
-        return "Piece{" +
-                "colour=" + colour +
-                ", originalLocation=" + originalLocation +
-                '}';
+        return (colour == Colour.WHITE ? "W" : "B");
+
     }
 }

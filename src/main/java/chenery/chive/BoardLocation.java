@@ -10,8 +10,7 @@ public class BoardLocation {
     private Column column;
     private Row row;
 
-    // todo consider row x column?
-    public BoardLocation(Column column, Row row) {
+    public BoardLocation(Row row, Column column) {
         this.column = column;
         this.row = row;
     }
@@ -45,8 +44,8 @@ public class BoardLocation {
     @Override
     public String toString() {
         return "BoardLocation{" +
-                "column=" + column +
-                ", row=" + row +
+                "row=" + row +
+                ", column=" + column +
                 '}';
     }
 }

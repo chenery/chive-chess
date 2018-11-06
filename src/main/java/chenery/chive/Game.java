@@ -30,37 +30,41 @@ public class Game {
         history = new GameHistory();
     }
 
+    public void printBoard() {
+        board.print();
+    }
+
     // todo this signature looks wrong
     // todo decide of validation during instantiation or method call)
-    public MoveResponse move(Colour colour, BoardLocation from, BoardLocation to) {
+    public MoveResponse move(Colour colour, Move move) {
 
         // valid move
-        Move move = new Move(colour, from, to, history);
+        MoveContext moveContext = new MoveContext(colour, move, history);
 
         // -> correct player
-        if (!move.getColour().equals(this.getNextToMove())) {
-            return new MoveResponse(Status.INVALID);
+        if (!moveContext.getColour().equals(this.getNextToMove())) {
+            return new MoveResponse(Status.INVALID).withMessage("Wrong player");
         }
 
         // -> is there A piece at the from location?
-        if (!board.getPieceAt(move.getFrom()).isPresent()) {
-            return new MoveResponse(Status.INVALID);
+        if (!board.getPieceAt(moveContext.getFrom()).isPresent()) {
+            return new MoveResponse(Status.INVALID).withMessage("No piece on this square");
         }
 
-        final Piece pieceMoving = board.getPieceAt(move.getFrom()).get();
+        final Piece pieceMoving = board.getPieceAt(moveContext.getFrom()).get();
 
         // -> the piece at 'from' is owned by the correct player todo move this expression to A helper.
-        if (!move.getColour().equals(pieceMoving.getColour())) {
-            return new MoveResponse(Status.INVALID);
+        if (!moveContext.getColour().equals(pieceMoving.getColour())) {
+            return new MoveResponse(Status.INVALID).withMessage("Cannot move other player's piece");
         }
 
         // -> the 'to' board location is A valid move for the piece
-        if (!pieceMoving.canMove(move)) {
-            return new MoveResponse(Status.INVALID);
+        if (!pieceMoving.canMove(moveContext)) {
+            return new MoveResponse(Status.INVALID).withMessage("Piece cannot make this move");
         }
 
         // -> the 'to' board location is either vacant
-        if (board.getPieceAt(move.getTo()).isPresent()) {
+        if (board.getPieceAt(moveContext.getTo()).isPresent()) {
             // then 'to' is valid, then occupied by the other player (A capture)
 
         }
@@ -70,22 +74,22 @@ public class Game {
 
 
         // update board
-        board.applyMove(move.getFrom(), move.getTo());
+        board.applyMove(moveContext.getFrom(), moveContext.getTo());
 
         // record move in history
-        history.recordMove(move);
+        history.recordMove(moveContext);
 
         // declare winner
-        if (isWinningMove(move, board)) {
+        if (isWinningMove(moveContext, board)) {
             return new MoveResponse(Status.CHECKMATE);
         }
 
         nextToMove = nextToMove == Colour.WHITE ? Colour.BLACK : Colour.WHITE;
 
-        return new MoveResponse(Status.OK);
+        return new MoveResponse(Status.OK).withMessage("Piece moved");
     }
 
-    private boolean isWinningMove(Move move, Board board) {
+    private boolean isWinningMove(MoveContext moveContext, Board board) {
         // todo decide on this
         return false;
     }

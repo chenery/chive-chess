@@ -37,4 +37,11 @@ public class Square {
         this.piece = null;
         return optionalPiece;
     }
+
+    @Override
+    public String toString() {
+        String value = "[" + atBoardLocation.getColumn().name() + (atBoardLocation.getRow().ordinal() + 1) + ", ";
+        value += getPiece().isPresent() ? piece.toString() : "__";
+        return value + "]";
+    }
 }

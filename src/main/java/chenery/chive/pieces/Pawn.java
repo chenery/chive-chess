@@ -1,7 +1,7 @@
 package chenery.chive.pieces;
 
 
-import chenery.chive.Move;
+import chenery.chive.MoveContext;
 import chenery.chive.Piece;
 
 /**
@@ -11,23 +11,23 @@ public class Pawn extends Piece {
 
 
     @Override
-    public boolean canMove(Move move) {
+    public boolean canMove(MoveContext moveContext) {
 
         // todo bring in logic from Game.move for board logic
 
         // 1. Can only move forward
-        if (!move.isForwardMove()) {
+        if (!moveContext.isForwardMove()) {
             return false;
         }
 
         // 2. Can always move one
-        if (move.rowsMoved() == 1 && move.columnsMoved() == 0) {
+        if (moveContext.rowsMoved() == 1 && moveContext.columnsMoved() == 0) {
             return true;
         }
 
         // 3. Can move two if first move
-        if (move.rowsMoved() == 2 && move.columnsMoved() == 0
-                && move.isFirstMove()) {
+        if (moveContext.rowsMoved() == 2 && moveContext.columnsMoved() == 0
+                && moveContext.isFirstMove()) {
             return true;
         }
 
@@ -39,4 +39,8 @@ public class Pawn extends Piece {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + "P";
+    }
 }

@@ -7,13 +7,13 @@ import java.util.Stack;
  */
 public class GameHistory {
 
-    private Stack<Move> moveHistory = new Stack<>();
+    private Stack<MoveContext> moveContextHistory = new Stack<>();
 
-    public void recordMove(Move move) {
-        this.moveHistory.push(move);
+    public void recordMove(MoveContext moveContext) {
+        this.moveContextHistory.push(moveContext);
     }
 
     public boolean isFirstMove(Colour forColour) {
-        return moveHistory.size() < 2;
+        return moveContextHistory.size() < 2;
     }
 }

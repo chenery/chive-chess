@@ -51,7 +51,7 @@ public class Board {
             // add the squares to the boardSquares
             for (int j = 0; j < NUM_COLS; j++) {
                 // add 8 squares to the row
-                BoardLocation boardLocation = new BoardLocation(Column.values()[j], Row.values()[i]);
+                BoardLocation boardLocation = new BoardLocation(Row.values()[i], Column.values()[j]);
                 rowSquares.add(new Square().setAtBoardLocation(boardLocation));
             }
         }
@@ -77,6 +77,17 @@ public class Board {
         return square.getPiece();
     }
 
+    public void print() {
+        System.out.print("\n");
+        for (int i = NUM_ROWS - 1; i >= 0 ; i--) {
+            List<Square> rowSquares = boardSquares.get(i);
+            for (Square square : rowSquares) {
+                System.out.print(square + "\t");
+            }
+            System.out.println();
+        }
+    }
+
     private Square getSquareAt(BoardLocation boardLocation) {
         int boardRowIndex = boardLocation.getRow().ordinal();
         int columnIndex = boardLocation.getColumn().ordinal();
@@ -99,7 +110,6 @@ public class Board {
         // 2 rooks
 
         // TODO complete
-        System.out.println("Completed setup of " + colour);
     }
 
 
