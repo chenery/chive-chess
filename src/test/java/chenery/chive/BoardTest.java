@@ -28,7 +28,7 @@ public class BoardTest {
         for (Row row : Row.values()) {
 
             for (Column column : Column.values()) {
-                BoardLocation pawnLocation = new BoardLocation(row, column);
+                BoardLocation pawnLocation = new BoardLocation(column, row);
 
                 if (row == Row.TWO) {
                     // THEN all white pawns exist
@@ -53,8 +53,8 @@ public class BoardTest {
 
         // GIVEN A new board, with a pawn
         Board board = new Board();
-        BoardLocation fromPawnBoardLocation = new BoardLocation(Row.TWO, Column.A);
-        BoardLocation toPawnBoardLocation = new BoardLocation(Row.THREE, Column.A);
+        BoardLocation fromPawnBoardLocation = new BoardLocation(Column.A, Row.TWO);
+        BoardLocation toPawnBoardLocation = new BoardLocation(Column.A, Row.THREE);
         Optional<Piece> fromPieceAt = board.getPieceAt(fromPawnBoardLocation);
         assertThat(fromPieceAt.isPresent()).isTrue();
         Piece pawn = fromPieceAt.get();

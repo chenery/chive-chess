@@ -10,7 +10,7 @@ public class BoardLocation {
     private Column column;
     private Row row;
 
-    public BoardLocation(Row row, Column column) {
+    public BoardLocation(Column column, Row row) {
         this.column = column;
         this.row = row;
     }

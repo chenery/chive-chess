@@ -51,7 +51,7 @@ public class Board {
             // add the squares to the boardSquares
             for (int j = 0; j < NUM_COLS; j++) {
                 // add 8 squares to the row
-                BoardLocation boardLocation = new BoardLocation(Row.values()[i], Column.values()[j]);
+                BoardLocation boardLocation = new BoardLocation(Column.getByOrdinal(j), Row.getByOrdinal(i));
                 rowSquares.add(new Square().setAtBoardLocation(boardLocation));
             }
         }

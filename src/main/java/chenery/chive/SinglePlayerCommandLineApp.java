@@ -1,33 +1,47 @@
 package chenery.chive;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 /**
  * A command line app that allows the user to play as white against the computer
  *
  */
-public class SinglePlayerCommandLineApp
-{
+public class SinglePlayerCommandLineApp {
 
+    private Game game = new Game();
+    private Scanner keyboard = new Scanner(System.in);
 
 
     public static void main( String[] args ) {
 
-        Game game = new Game();
+        SinglePlayerCommandLineApp app = new SinglePlayerCommandLineApp();
 
         while(true) {
-            game.printBoard();
+            app.nextTurn();
+        }
+    }
 
-            Scanner keyboard = new Scanner(System.in);
-            System.out.println("Enter move:");
+    private void nextTurn() {
+        game.printBoard();
+        System.out.println("\nEnter move (e.g. a2,a3):");
+        String moveText = getKeyboard().nextLine();
+        Optional<Move> moveParseResponse = MoveParser.parse(moveText);
 
-            String moveText = keyboard.nextLine();
-
-            MoveResponse response = game.move(Colour.WHITE, MoveParser.parse(moveText));
-
-            System.out.println("Made move: " + response.toString());
+        if (!moveParseResponse.isPresent()) {
+            System.out.println("Invalid move");
+            return;
         }
 
+        MoveResponse response = getGame().move(Colour.WHITE, moveParseResponse.get());
+        System.out.println("Made move: " + response.toString());
+    }
 
+    public Game getGame() {
+        return game;
+    }
+
+    public Scanner getKeyboard() {
+        return keyboard;
     }
 }
