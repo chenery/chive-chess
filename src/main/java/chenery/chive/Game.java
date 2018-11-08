@@ -4,11 +4,8 @@ package chenery.chive;
 import chenery.chive.MoveResponse.Status;
 
 /**
- * TODO create A game state class?
+ * todo allow different variants of the game, rather than just against the computer
  *
- * TODO create A command line interface
- *
- * TODO print the board after each move
  */
 public class Game {
 
@@ -17,6 +14,7 @@ public class Game {
     private Player black;
     private GameHistory history;
     private Colour nextToMove;
+    private RandomComputerPlayer randomComputerPlayer;
 
     public Game() {
         // setup all the pieces on the board
@@ -28,10 +26,16 @@ public class Game {
         nextToMove = Colour.WHITE;
 
         history = new GameHistory();
+        randomComputerPlayer = new RandomComputerPlayer();
     }
 
     public void printBoard() {
         board.print();
+    }
+
+    public MoveResponse computerToSelectMove(Colour colour) {
+        return move(colour,
+                randomComputerPlayer.selectMove(colour, board));
     }
 
     // todo this signature looks wrong
@@ -39,10 +43,10 @@ public class Game {
     public MoveResponse move(Colour colour, Move move) {
 
         // valid move
-        MoveContext moveContext = new MoveContext(colour, move, history);
+        MoveContext moveContext = new MoveContext(colour, move);
 
         // -> correct player
-        if (!moveContext.getColour().equals(this.getNextToMove())) {
+        if (!moveContext.getColour().equals(nextToMove)) {
             return new MoveResponse(Status.INVALID).withMessage("Wrong player");
         }
 
@@ -53,10 +57,11 @@ public class Game {
 
         final Piece pieceMoving = board.getPieceAt(moveContext.getFrom()).get();
 
-        // -> the piece at 'from' is owned by the correct player todo move this expression to A helper.
+        // -> the piece at 'from' is owned by the correct player
         if (!moveContext.getColour().equals(pieceMoving.getColour())) {
             return new MoveResponse(Status.INVALID).withMessage("Cannot move other player's piece");
         }
+
 
         // -> the 'to' board location is A valid move for the piece
         if (!pieceMoving.canMove(moveContext)) {
@@ -64,6 +69,7 @@ public class Game {
         }
 
         // -> the 'to' board location is either vacant
+        // todo complete this logic
         if (board.getPieceAt(moveContext.getTo()).isPresent()) {
             // then 'to' is valid, then occupied by the other player (A capture)
 
@@ -86,7 +92,7 @@ public class Game {
 
         nextToMove = nextToMove == Colour.WHITE ? Colour.BLACK : Colour.WHITE;
 
-        return new MoveResponse(Status.OK).withMessage("Piece moved");
+        return new MoveResponse(Status.OK).withMessage("Piece moved").withMove(move);
     }
 
     private boolean isWinningMove(MoveContext moveContext, Board board) {

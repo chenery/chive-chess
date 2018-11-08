@@ -18,14 +18,22 @@ public class SinglePlayerCommandLineApp {
         SinglePlayerCommandLineApp app = new SinglePlayerCommandLineApp();
 
         while(true) {
-            app.nextTurn();
+            app.executeRound();
         }
     }
 
-    private void nextTurn() {
+    private void executeRound() {
+        if (game.getNextToMove() == Colour.WHITE) {
+            whitePlayerTurn();
+        } else {
+            computerPlayerTurn();
+        }
+    }
+
+    private void whitePlayerTurn() {
         game.printBoard();
         System.out.println("\nEnter move (e.g. a2,a3):");
-        String moveText = getKeyboard().nextLine();
+        String moveText = keyboard.nextLine();
         Optional<Move> moveParseResponse = MoveParser.parse(moveText);
 
         if (!moveParseResponse.isPresent()) {
@@ -33,15 +41,14 @@ public class SinglePlayerCommandLineApp {
             return;
         }
 
-        MoveResponse response = getGame().move(Colour.WHITE, moveParseResponse.get());
-        System.out.println("Made move: " + response.toString());
+        MoveResponse response = game.move(Colour.WHITE, moveParseResponse.get());
+        System.out.println("White player made move: " + response.toString());
     }
 
-    public Game getGame() {
-        return game;
+    private void computerPlayerTurn() {
+        MoveResponse response = game.computerToSelectMove(Colour.BLACK);
+        System.out.println("Black player made move: " + response.toString());
     }
 
-    public Scanner getKeyboard() {
-        return keyboard;
-    }
+
 }

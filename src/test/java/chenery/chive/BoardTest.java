@@ -34,12 +34,12 @@ public class BoardTest {
                     // THEN all white pawns exist
                     assertThat(board.getPieceAt(pawnLocation).isPresent()).isTrue();
                     assertThat(board.getPieceAt(pawnLocation).get())
-                            .isEqualTo(new Pawn().setColour(Colour.WHITE).setOriginalLocation(pawnLocation));
+                            .isEqualTo(new Pawn(Colour.WHITE,pawnLocation));
                 } else if (row == Row.SEVEN) {
                     // AND all black pawns exist
                     assertThat(board.getPieceAt(pawnLocation).isPresent()).isTrue();
                     assertThat(board.getPieceAt(pawnLocation).get())
-                            .isEqualTo(new Pawn().setColour(Colour.BLACK).setOriginalLocation(pawnLocation));
+                            .isEqualTo(new Pawn(Colour.BLACK, pawnLocation));
                 } else {
                     // AND no other pieces
                     assertThat(board.getPieceAt(pawnLocation).isPresent()).isFalse();

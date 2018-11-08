@@ -10,13 +10,11 @@ public class MoveContext {
     private Colour colour;
     private BoardLocation from;
     private BoardLocation to;
-    private GameHistory gameHistory;
 
-    public MoveContext(Colour colour, Move move, GameHistory gameHistory) {
+    public MoveContext(Colour colour, Move move) {
         this.colour = colour;
         this.from = move.getFrom();
         this.to = move.getTo();
-        this.gameHistory = gameHistory;
     }
 
     public int rowsMoved() {
@@ -46,10 +44,6 @@ public class MoveContext {
     public boolean isForwardMove() {
         return (this.rowDirection() == RowDirection.UP && this.getColour() == Colour.WHITE)
                 || (this.rowDirection() == RowDirection.DOWN && this.getColour() == Colour.BLACK);
-    }
-
-    public boolean isFirstMove() {
-        return this.gameHistory.isFirstMove(this.getColour());
     }
 
     public Colour getColour() {

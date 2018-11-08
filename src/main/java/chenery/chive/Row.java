@@ -1,18 +1,21 @@
 package chenery.chive;
 
+import java.util.Optional;
+
 /**
  *
  */
 public enum Row {
     ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT;
 
-    public static Row getByOrdinal(int ordinal) {
-        // Note we might throw our own exception here if the ordinal was out of range of the enum
-        return Row.values()[ordinal];
+    public static Optional<Row> getByOrdinal(int ordinal) {
+        if (ordinal < 0 || ordinal > 7) {
+            return Optional.empty();
+        }
+        return Optional.of(Row.values()[ordinal]);
     }
 
-    public static Row get(int rowNumber) {
-        // Note we might throw our own exception here if the ordinal was out of range of the enum
+    public static Optional<Row> get(int rowNumber) {
         return getByOrdinal(rowNumber - 1);
     }
 }

@@ -29,9 +29,9 @@ public class MoveParser {
 
         if (matcher.find()) {
             Column fromColumn = Column.getColumn(matcher.group(1));
-            Row fromRow = Row.get(Integer.parseInt(matcher.group(2)));
+            Row fromRow = Row.get(Integer.parseInt(matcher.group(2))).get();
             Column toColumn = Column.getColumn(matcher.group(3));
-            Row toRow = Row.get(Integer.parseInt(matcher.group(4)));
+            Row toRow = Row.get(Integer.parseInt(matcher.group(4))).get();
 
             return Optional.of(new Move(
                             new BoardLocation(fromColumn, fromRow),

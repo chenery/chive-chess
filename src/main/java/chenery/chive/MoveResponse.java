@@ -11,12 +11,19 @@ public class MoveResponse {
 
     private String message;
 
+    private Move move;
+
     public MoveResponse(Status status) {
         this.status = status;
     }
 
     public MoveResponse withMessage(String message) {
         this.message = message;
+        return this;
+    }
+
+    public MoveResponse withMove(Move move) {
+        this.move = move;
         return this;
     }
 
@@ -29,6 +36,7 @@ public class MoveResponse {
         return "MoveResponse{" +
                 "status=" + status +
                 ", message='" + message + '\'' +
+                ", move=" + move +
                 '}';
     }
 }
