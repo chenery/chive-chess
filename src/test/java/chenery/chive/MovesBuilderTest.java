@@ -9,18 +9,18 @@ import static org.fest.assertions.Assertions.assertThat;
 /**
  *
  */
-public class MoveBuilderTest {
+public class MovesBuilderTest {
 
     @Test
     public void initiallyZeroMoves() {
-        assertThat(new MoveBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO)).getMoves()).hasSize(0);
+        assertThat(new MovesBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO)).getMoves()).hasSize(0);
     }
 
     @Test
     public void forwardOne_providesMove() {
 
         // GIVEN a board location that allows forwardOne
-        Set<Move> moves = new MoveBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO)).forwardOne().getMoves();
+        Set<Move> moves = new MovesBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO)).forwardOne().getMoves();
 
         // WHEN built, correct move is supplied
         assertThat(moves).hasSize(1).contains(new Move(
@@ -33,7 +33,7 @@ public class MoveBuilderTest {
     public void forwardOne_fromImpossibleBoardLocation_zeroMoves() {
 
         // GIVEN a board location from which it is not possible to forwardOne
-        Set<Move> moves = new MoveBuilder(Colour.WHITE, new BoardLocation(Column.C, Row.EIGHT)).forwardOne().getMoves();
+        Set<Move> moves = new MovesBuilder(Colour.WHITE, new BoardLocation(Column.C, Row.EIGHT)).forwardOne().getMoves();
 
         // WHEN built, no move is supplied
         assertThat(moves).hasSize(0);
@@ -43,7 +43,7 @@ public class MoveBuilderTest {
     public void forwardTwo_providesMove() {
 
         // GIVEN a board location that allows forwardTwo, and truthy predicate
-        Set<Move> moves = new MoveBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO))
+        Set<Move> moves = new MovesBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO))
                 .forwardTwo(location -> true).getMoves();
 
         // WHEN built, correct move is supplied
@@ -57,7 +57,7 @@ public class MoveBuilderTest {
     public void forwardTwo_providesZeroMove_ifFalseyPredicate() {
 
         // GIVEN a board location that allows forwardTwo, and falsey predicate
-        Set<Move> moves = new MoveBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO))
+        Set<Move> moves = new MovesBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO))
                 .forwardTwo(location -> false).getMoves();
 
         // WHEN built, no move is supplied
@@ -68,7 +68,7 @@ public class MoveBuilderTest {
     public void forwardOne_forwardTwo_provideBothMoves() {
 
         // GIVEN a board location that allows forwardOne and forwardTwo, and truthy predicate
-        Set<Move> moves = new MoveBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO))
+        Set<Move> moves = new MovesBuilder(Colour.WHITE, new BoardLocation(Column.A, Row.TWO))
                 .forwardOne()
                 .forwardTwo(location -> true).getMoves();
 
@@ -81,5 +81,33 @@ public class MoveBuilderTest {
                         new BoardLocation(Column.A, Row.TWO),
                         new BoardLocation(Column.A, Row.THREE))
         );
+    }
+
+    @Test
+    public void forwardLeftDiagonal_providesMove() {
+
+        // GIVEN a board location that allows forwardLeftDiagonal
+        Set<Move> moves = new MovesBuilder(Colour.WHITE, new BoardLocation(Column.B, Row.TWO))
+                .forwardLeftDiagonal(1).getMoves();
+
+        // WHEN built, correct move is supplied
+        assertThat(moves).hasSize(1).contains(new Move(
+                new BoardLocation(Column.B, Row.TWO),
+                new BoardLocation(Column.A, Row.THREE)
+        ));
+    }
+
+    @Test
+    public void forwardRightDiagonal_providesMove() {
+
+        // GIVEN a board location that allows forwardRightDiagonal
+        Set<Move> moves = new MovesBuilder(Colour.WHITE, new BoardLocation(Column.B, Row.TWO))
+                .forwardRightDiagonal(1).getMoves();
+
+        // WHEN built, correct move is supplied
+        assertThat(moves).hasSize(1).contains(new Move(
+                new BoardLocation(Column.B, Row.TWO),
+                new BoardLocation(Column.C, Row.THREE)
+        ));
     }
 }

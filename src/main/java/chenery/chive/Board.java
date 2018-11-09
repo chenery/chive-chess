@@ -53,13 +53,14 @@ public class Board {
 
             // add the squares to the boardRows
             for (int j = 0; j < NUM_COLS; j++) {
-                Column column = Column.getByOrdinal(j);
+                Optional<Column> optionalColumn = Column.getByOrdinal(j);
                 // add 8 squares to the row
                 Optional<Row> optionalRow = Row.getByOrdinal(i);
-                optionalRow.ifPresent(row -> {
-                    BoardLocation boardLocation = new BoardLocation(column, row);
+
+                if (optionalColumn.isPresent() && optionalRow.isPresent()) {
+                    BoardLocation boardLocation = new BoardLocation(optionalColumn.get(), optionalRow.get());
                     rowSquares.add(new Square().setAtBoardLocation(boardLocation));
-                });
+                }
             }
         }
 

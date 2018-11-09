@@ -6,6 +6,8 @@ import java.util.Set;
 /**
  * todo A piece should move?
  *
+ * todo a piece could know it's own board location?
+ *
  */
 public abstract class Piece {
 

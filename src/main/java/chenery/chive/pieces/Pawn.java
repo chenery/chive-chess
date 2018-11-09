@@ -4,7 +4,7 @@ package chenery.chive.pieces;
 import chenery.chive.BoardLocation;
 import chenery.chive.Colour;
 import chenery.chive.Move;
-import chenery.chive.MoveBuilder;
+import chenery.chive.MovesBuilder;
 import chenery.chive.MoveContext;
 import chenery.chive.Piece;
 import chenery.chive.Row;
@@ -23,25 +23,34 @@ public class Pawn extends Piece {
     @Override
     public boolean canMove(MoveContext moveContext) {
 
-        // 1. Can only move forward
-        if (!moveContext.isForwardMove()) {
-            return false;
-        }
+        final Move proposedMove = moveContext.getMove();
 
-        // 2. Can always move one
-        if (moveContext.rowsMoved() == 1 && moveContext.columnsMoved() == 0) {
+        // 1 & 2 forward moves
+
+        // todo check 2 forward does not "jump" a piece
+
+        if (new MovesBuilder(getColour(), moveContext.getFrom())
+                .forwardOne()
+                .forwardTwo(this::isFirstMove)
+                .getMoves()
+                .contains(proposedMove)
+                // forward moves are only possible if the square is unoccupied
+                && !moveContext.getPieceAtToLocation().isPresent()) {
             return true;
         }
 
-        // 3. Can move two if first move
-        if (moveContext.rowsMoved() == 2 && moveContext.columnsMoved() == 0
-                && this.isFirstMove(moveContext.getFrom())) {
+        // 3. Can move diagonal - if capturing a piece
+        // NOTE: assume Game class has checked any potential capture is owned by opposition
+        if (moveContext.getPieceAtToLocation().isPresent()
+                && new MovesBuilder(getColour(), moveContext.getFrom())
+                .forwardLeftDiagonal(1)
+                .forwardRightDiagonal(1)
+                .getMoves()
+                .contains(proposedMove)) {
             return true;
         }
 
         // todo
-        // 3. Can move diagonal - if capturing A piece
-
         // 4. pawn can turn to any other piece taken? if reaches the end of the board?
 
         return false;
@@ -49,9 +58,11 @@ public class Pawn extends Piece {
 
     @Override
     public Set<Move> potentialMoves(BoardLocation fromBoardLocation) {
-        return new MoveBuilder(getColour(), fromBoardLocation)
+        return new MovesBuilder(getColour(), fromBoardLocation)
                 .forwardOne()
                 .forwardTwo(this::isFirstMove)
+                .forwardLeftDiagonal(1)
+                .forwardRightDiagonal(1)
                 .getMoves();
     }
 
@@ -62,7 +73,7 @@ public class Pawn extends Piece {
      * @param boardLocation where the piece is located
      * @return true if first move for this piece
      */
-    boolean isFirstMove(BoardLocation boardLocation) {
+    private boolean isFirstMove(BoardLocation boardLocation) {
         return boardLocation.getRow() == Row.TWO && this.getColour() == Colour.WHITE
                 || boardLocation.getRow() == Row.SEVEN && this.getColour() == Colour.BLACK;
 

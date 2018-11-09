@@ -28,16 +28,18 @@ public class MoveParser {
         Matcher matcher = MOVE_PATTERN.matcher(moveText);
 
         if (matcher.find()) {
-            Column fromColumn = Column.getColumn(matcher.group(1));
-            Row fromRow = Row.get(Integer.parseInt(matcher.group(2))).get();
-            Column toColumn = Column.getColumn(matcher.group(3));
-            Row toRow = Row.get(Integer.parseInt(matcher.group(4))).get();
+            Optional<Column> fromColumn = Column.getColumn(matcher.group(1));
+            Optional<Row> fromRow = Row.get(Integer.parseInt(matcher.group(2)));
+            Optional<Column> toColumn = Column.getColumn(matcher.group(3));
+            Optional<Row> toRow = Row.get(Integer.parseInt(matcher.group(4)));
 
-            return Optional.of(new Move(
-                            new BoardLocation(fromColumn, fromRow),
-                            new BoardLocation(toColumn, toRow)));
-        } else {
-            return Optional.empty();
+            if (fromColumn.isPresent() && fromRow.isPresent() && toColumn.isPresent() && toRow.isPresent()) {
+                return Optional.of(new Move(
+                        new BoardLocation(fromColumn.get(), fromRow.get()),
+                        new BoardLocation(toColumn.get(), toRow.get())));
+            }
         }
+
+        return Optional.empty();
     }
 }

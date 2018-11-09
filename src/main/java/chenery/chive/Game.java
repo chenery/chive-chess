@@ -42,41 +42,43 @@ public class Game {
     // todo decide of validation during instantiation or method call)
     public MoveResponse move(Colour colour, Move move) {
 
-        // valid move
+        // setup a moveContext that can be used to determine the validity of the move
         MoveContext moveContext = new MoveContext(colour, move);
 
-        // -> correct player
+        // Validate correct player
         if (!moveContext.getColour().equals(nextToMove)) {
             return new MoveResponse(Status.INVALID).withMessage("Wrong player");
         }
 
-        // -> is there A piece at the from location?
+        // Validate is there a piece at the from location?
         if (!board.getPieceAt(moveContext.getFrom()).isPresent()) {
             return new MoveResponse(Status.INVALID).withMessage("No piece on this square");
         }
 
         final Piece pieceMoving = board.getPieceAt(moveContext.getFrom()).get();
 
-        // -> the piece at 'from' is owned by the correct player
+        // Validate the piece at 'from' is owned by the correct player
         if (!moveContext.getColour().equals(pieceMoving.getColour())) {
             return new MoveResponse(Status.INVALID).withMessage("Cannot move other player's piece");
         }
 
+        // Validate cannot attempt to capture own piece
+        if (board.getPieceAt(move.getTo()).isPresent()) {
+            Piece pieceAtTo = board.getPieceAt(move.getTo()).get();
+            if (pieceAtTo.getColour() == colour) {
+                return new MoveResponse(Status.INVALID).withMessage("Square occupied by your own piece");
+            }
 
-        // -> the 'to' board location is A valid move for the piece
+            // it's a attempted capture, supply the piece at to location with the moveContext
+            moveContext.setPieceAtLocation(pieceAtTo);
+        }
+
+        // Validate the 'to' board location is A valid move for the piece
         if (!pieceMoving.canMove(moveContext)) {
             return new MoveResponse(Status.INVALID).withMessage("Piece cannot make this move");
         }
 
-        // -> the 'to' board location is either vacant
-        // todo complete this logic
-        if (board.getPieceAt(moveContext.getTo()).isPresent()) {
-            // then 'to' is valid, then occupied by the other player (A capture)
-
-        }
-
         // -> the move does not incur A 'check'
-
 
 
         // update board

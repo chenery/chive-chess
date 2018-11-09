@@ -43,9 +43,6 @@ public class BoardLocation {
 
     @Override
     public String toString() {
-        return "BoardLocation{" +
-                "row=" + row +
-                ", column=" + column +
-                '}';
+        return "BoardLocation{" + column + "," + row +'}';
     }
 }

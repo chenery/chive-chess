@@ -1,5 +1,7 @@
 package chenery.chive;
 
+import java.util.Optional;
+
 /**
  *  todo https://en.wikipedia.org/wiki/Portable_Game_Notation
  *  todo include the move number
@@ -8,13 +10,22 @@ package chenery.chive;
  */
 public class MoveContext {
     private Colour colour;
+    private Move move;
     private BoardLocation from;
     private BoardLocation to;
+    // Null if there is no piece there
+    private Piece pieceAtToLocation;
 
     public MoveContext(Colour colour, Move move) {
         this.colour = colour;
+        this.move = move;
         this.from = move.getFrom();
         this.to = move.getTo();
+    }
+
+    public MoveContext setPieceAtLocation(Piece pieceAtLocation) {
+        this.pieceAtToLocation = pieceAtLocation;
+        return this;
     }
 
     public int rowsMoved() {
@@ -56,5 +67,13 @@ public class MoveContext {
 
     public BoardLocation getTo() {
         return to;
+    }
+
+    public Optional<Piece> getPieceAtToLocation() {
+        return pieceAtToLocation != null ? Optional.of(pieceAtToLocation) : Optional.empty();
+    }
+
+    public Move getMove() {
+        return move;
     }
 }
