@@ -57,8 +57,8 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public Set<Move> potentialMoves(BoardLocation fromBoardLocation) {
-        return new MovesBuilder(getColour(), fromBoardLocation)
+    public Set<Move> potentialMoves() {
+        return new MovesBuilder(getColour(), getCurrentLocation())
                 .forwardOne()
                 .forwardTwo(this::isFirstMove)
                 .forwardLeftDiagonal(1)

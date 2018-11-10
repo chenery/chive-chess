@@ -37,6 +37,21 @@ public class MovesBuilder {
         return this;
     }
 
+    public MovesBuilder backOne() {
+        move(false, 1, true, 0);
+        return this;
+    }
+
+    public MovesBuilder leftOne() {
+        move(true, 0, false, 1);
+        return this;
+    }
+
+    public MovesBuilder rightOne() {
+        move(true, 0, true, 1);
+        return this;
+    }
+
     public MovesBuilder forwardLeftDiagonal(int distance) {
         move(true, distance, false, distance);
         return this;
@@ -44,6 +59,16 @@ public class MovesBuilder {
 
     public MovesBuilder forwardRightDiagonal(int distance) {
         move(true, distance, true, distance);
+        return this;
+    }
+
+    public MovesBuilder backLeftDiagonal(int distance) {
+        move(false, distance, false, distance);
+        return this;
+    }
+
+    public MovesBuilder backRightDiagonal(int distance) {
+        move(false, distance, true, distance);
         return this;
     }
 

@@ -39,7 +39,7 @@ public class PawnTest {
 
         // WHEN queried for potential moves when the piece is still at C2
         // THEN all moves are supplied
-        assertThat(pawn.potentialMoves(c2)).hasSize(4)
+        assertThat(pawn.potentialMoves()).hasSize(4)
                 .contains(
                     new Move(c2, c4),
                     new Move(c2, c3),

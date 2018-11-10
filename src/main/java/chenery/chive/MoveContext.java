@@ -13,7 +13,7 @@ public class MoveContext {
     private Move move;
     private BoardLocation from;
     private BoardLocation to;
-    // Null if there is no piece there
+    // Null if there is no piece captured
     private Piece pieceAtToLocation;
 
     public MoveContext(Colour colour, Move move) {

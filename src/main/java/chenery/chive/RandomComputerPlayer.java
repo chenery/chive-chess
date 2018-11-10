@@ -14,19 +14,7 @@ public class RandomComputerPlayer {
 
     public Move selectMove(Colour forColour, Board board) {
 
-        List<Move> possibleMoves = new ArrayList<>();
-        board.getSquares(forColour).forEach(square -> {
-            if (square.getPiece().isPresent()) {
-                Piece piece = square.getPiece().get();
-
-                // todo need to include the canMove logic from the game class
-                piece.potentialMoves(square.getAtBoardLocation()).forEach(potentialMove -> {
-                    if (piece.canMove(new MoveContext(forColour, potentialMove))) {
-                        possibleMoves.add(potentialMove);
-                    }
-                });
-            }
-        });
+        List<Move> possibleMoves = new ArrayList<>(new MoveValidator().validMoves(forColour, board));
 
         if (possibleMoves.size() == 0) {
             // todo handle the end game state

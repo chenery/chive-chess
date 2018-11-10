@@ -6,7 +6,6 @@ import java.util.Set;
 /**
  * todo A piece should move?
  *
- * todo a piece could know it's own board location?
  *
  */
 public abstract class Piece {
@@ -16,19 +15,26 @@ public abstract class Piece {
     // A way of uniquely identifying the piece when the are multiple instances, e.g. Pawn
     private BoardLocation originalLocation;
 
+    private BoardLocation currentLocation;
+
     public Piece(Colour colour, BoardLocation originalLocation) {
         this.colour = colour;
         this.originalLocation = originalLocation;
+        this.currentLocation = originalLocation;
+    }
+
+    public Piece setCurrentLocation(BoardLocation currentLocation) {
+        this.currentLocation = currentLocation;
+        return this;
     }
 
     /**
      * All moves a piece can make from a board location.  This does not take into account
      * any other pieces on the board
      *
-     * @param fromBoardLocation
      * @return
      */
-    public abstract Set<Move> potentialMoves(BoardLocation fromBoardLocation);
+    public abstract Set<Move> potentialMoves();
 
     public abstract boolean canMove(MoveContext moveContext);
 
@@ -38,6 +44,10 @@ public abstract class Piece {
 
     public BoardLocation getOriginalLocation() {
         return originalLocation;
+    }
+
+    public BoardLocation getCurrentLocation() {
+        return currentLocation;
     }
 
     @Override
