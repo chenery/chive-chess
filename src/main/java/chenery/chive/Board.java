@@ -27,14 +27,14 @@ import java.util.Optional;
  */
 public interface Board extends Cloneable {
 
-    BoardLocation WHITE_KING_LOCATION = new BoardLocation(Column.E, Row.ONE);
-    BoardLocation BLACK_KING_LOCATION = new BoardLocation(Column.E, Row.EIGHT);
+    Square WHITE_KING_SQUARE = new Square(Column.E, Row.ONE);
+    Square BLACK_KING_SQUARE = new Square(Column.E, Row.EIGHT);
 
-    Optional<Piece> getPiece(BoardLocation at);
+    Optional<Piece> getPiece(Square at);
 
     List<Piece> getPieces(Colour forColour);
 
-    void move(BoardLocation from, BoardLocation to);
+    void move(Square from, Square to);
 
     void print();
 

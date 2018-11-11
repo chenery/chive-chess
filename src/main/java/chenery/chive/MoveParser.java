@@ -35,8 +35,8 @@ public class MoveParser {
 
             if (fromColumn.isPresent() && fromRow.isPresent() && toColumn.isPresent() && toRow.isPresent()) {
                 return Optional.of(new Move(
-                        new BoardLocation(fromColumn.get(), fromRow.get()),
-                        new BoardLocation(toColumn.get(), toRow.get())));
+                        new Square(fromColumn.get(), fromRow.get()),
+                        new Square(toColumn.get(), toRow.get())));
             }
         }
 

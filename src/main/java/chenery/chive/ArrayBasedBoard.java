@@ -2,6 +2,7 @@ package chenery.chive;
 
 import chenery.chive.pieces.King;
 import chenery.chive.pieces.Pawn;
+import chenery.chive.pieces.Rook;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,30 +26,52 @@ public class ArrayBasedBoard implements Board {
     }
 
     public ArrayBasedBoard setUpColour(Colour colour) {
-        return setUpPawns(colour).setUpKing(colour);
+        return setUpPawns(colour).setUpKing(colour).setUpRooks(colour);
     }
 
     public ArrayBasedBoard setUpPawns(Colour colour) {
         int rowIndex = colour == Colour.WHITE ? 1 : 6;
         for (int i = 0; i < NUM_PAWNS; i++) {
-            BoardLocation at = new BoardLocation(Column.getByOrdinal(i).get(), Row.getByOrdinal(rowIndex).get());
-            setUpPiece(new Pawn(colour, at), at);
+            Square at = new Square(Column.getByOrdinal(i).get(), Row.getByOrdinal(rowIndex).get());
+            setUpPiece(new Pawn(colour, at));
         }
         return this;
     }
 
     public ArrayBasedBoard setUpKing(Colour colour) {
-        BoardLocation kingLocation = colour == Colour.WHITE ? WHITE_KING_LOCATION : BLACK_KING_LOCATION;
-        return setUpPiece(new King(colour, kingLocation), kingLocation);
+        Square kingLocation = colour == Colour.WHITE ? WHITE_KING_SQUARE : BLACK_KING_SQUARE;
+        return setUpPiece(new King(colour, kingLocation));
     }
 
-    public ArrayBasedBoard setUpPiece(Piece piece, BoardLocation at) {
+    public ArrayBasedBoard setUpRooks(Colour colour) {
+        Square leftRook = colour == Colour.WHITE ? Square.at(Column.A, Row.ONE) : Square.at(Column.H, Row.EIGHT);
+        Square rightRook = colour == Colour.WHITE ? Square.at(Column.H, Row.ONE) : Square.at(Column.A, Row.EIGHT);
+        return setUpPiece(new Rook(colour, leftRook)).setUpPiece(new Rook(colour, rightRook));
+    }
+
+    public ArrayBasedBoard setUpPiece(Piece piece) {
+
+        if (getPiece(piece.getCurrentLocation()).isPresent()) {
+            throw new IllegalStateException("Piece already present on this square");
+        };
+
+        board[piece.getCurrentLocation().getRow().ordinal()][piece.getCurrentLocation().getColumn().ordinal()]
+                = piece;
+        return this;
+    }
+
+    public ArrayBasedBoard setUpPieces(Piece... pieces) {
+        Stream.of(pieces).forEach(this::setUpPiece);
+        return this;
+    }
+
+    public ArrayBasedBoard setUpPiece(Piece piece, Square at) {
         board[at.getRow().ordinal()][at.getColumn().ordinal()] = piece;
         return this;
     }
 
     @Override
-    public Optional<Piece> getPiece(BoardLocation at) {
+    public Optional<Piece> getPiece(Square at) {
         Piece pieceAt = board[at.getRow().ordinal()][at.getColumn().ordinal()];
         return pieceAt != null ? Optional.of(pieceAt) : Optional.empty();
     }
@@ -62,7 +85,7 @@ public class ArrayBasedBoard implements Board {
     }
 
     @Override
-    public void move(BoardLocation from, BoardLocation to) {
+    public void move(Square from, Square to) {
         getPiece(from).ifPresent(piece -> {
             // remove piece from location
             board[from.getRow().ordinal()][from.getColumn().ordinal()] = null;
@@ -79,7 +102,7 @@ public class ArrayBasedBoard implements Board {
         for (int i = NUM_ROWS - 1; i >= 0 ; i--) {
             for (int j = 0; j < NUM_COLS ; j++) {
                 Piece piece = board[i][j];
-                BoardLocation atLocation = new BoardLocation(Column.getByOrdinal(j).get(), Row.getByOrdinal(i).get());
+                Square atLocation = new Square(Column.getByOrdinal(j).get(), Row.getByOrdinal(i).get());
                 System.out.print(getSquarePrintValue(atLocation, piece) + "\t");
             }
             System.out.println();
@@ -99,11 +122,11 @@ public class ArrayBasedBoard implements Board {
                     try {
                         // Note: this works as long as Colour and BoardLocation are immutable
                         Piece clonedPiece = piece.getClass()
-                                .getConstructor(Colour.class, BoardLocation.class)
-                                .newInstance(piece.getColour(), piece.getOriginalLocation());
+                                .getConstructor(Colour.class, Square.class)
+                                .newInstance(piece.getColour(), piece.getOriginalLocation())
+                                .setCurrentLocation(piece.getCurrentLocation());
 
-                        BoardLocation at = new BoardLocation(Column.getByOrdinal(j).get(), Row.getByOrdinal(i).get());
-                        clonedBoard.setUpPiece(clonedPiece, at);
+                        clonedBoard.setUpPiece(clonedPiece);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -117,9 +140,9 @@ public class ArrayBasedBoard implements Board {
 
     // todo equals and hashcode for deep comparison of boards
 
-    private String getSquarePrintValue(BoardLocation atBoardLocation, Piece piece) {
-        String value = "[" + atBoardLocation.getColumn().name() + (atBoardLocation.getRow().ordinal() + 1) + ", ";
-        value += piece != null ? piece.toString() : "__";
+    private String getSquarePrintValue(Square atSquare, Piece piece) {
+        String value = "[" + atSquare.getColumn().name() + (atSquare.getRow().ordinal() + 1) + ", ";
+        value += piece != null ? piece.toString() : "_";
         return value + "]";
     }
 }

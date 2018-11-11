@@ -1,6 +1,6 @@
 package chenery.chive.pieces;
 
-import chenery.chive.BoardLocation;
+import chenery.chive.Square;
 import chenery.chive.Colour;
 import chenery.chive.Column;
 import chenery.chive.Move;
@@ -17,19 +17,19 @@ import static org.fest.assertions.Assertions.assertThat;
  */
 public class PawnTest {
 
-    private BoardLocation b2 = new BoardLocation(Column.B, Row.TWO);
-    private BoardLocation b3 = new BoardLocation(Column.B, Row.THREE);
-    private BoardLocation b4 = new BoardLocation(Column.B, Row.FOUR);
-    private BoardLocation b7 = new BoardLocation(Column.B, Row.SEVEN);
+    private Square b2 = new Square(Column.B, Row.TWO);
+    private Square b3 = new Square(Column.B, Row.THREE);
+    private Square b4 = new Square(Column.B, Row.FOUR);
+    private Square b7 = new Square(Column.B, Row.SEVEN);
 
-    private BoardLocation c1 = new BoardLocation(Column.C, Row.ONE);
-    private BoardLocation c2 = new BoardLocation(Column.C, Row.TWO);
-    private BoardLocation c3 = new BoardLocation(Column.C, Row.THREE);
-    private BoardLocation c4 = new BoardLocation(Column.C, Row.FOUR);
+    private Square c1 = new Square(Column.C, Row.ONE);
+    private Square c2 = new Square(Column.C, Row.TWO);
+    private Square c3 = new Square(Column.C, Row.THREE);
+    private Square c4 = new Square(Column.C, Row.FOUR);
 
-    private BoardLocation d2 = new BoardLocation(Column.D, Row.TWO);
-    private BoardLocation d3 = new BoardLocation(Column.D, Row.THREE);
-    private BoardLocation d4 = new BoardLocation(Column.D, Row.FOUR);
+    private Square d2 = new Square(Column.D, Row.TWO);
+    private Square d3 = new Square(Column.D, Row.THREE);
+    private Square d4 = new Square(Column.D, Row.FOUR);
 
     @Test
     public void potentialMoves_unrestrictedBoardLocation() {

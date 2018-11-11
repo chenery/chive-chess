@@ -7,19 +7,19 @@ import java.util.Objects;
  */
 public class Move {
 
-    private BoardLocation from;
-    private BoardLocation to;
+    private Square from;
+    private Square to;
 
-    public Move(BoardLocation from, BoardLocation to) {
+    public Move(Square from, Square to) {
         this.from = from;
         this.to = to;
     }
 
-    public BoardLocation getFrom() {
+    public Square getFrom() {
         return from;
     }
 
-    public BoardLocation getTo() {
+    public Square getTo() {
         return to;
     }
 

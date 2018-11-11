@@ -1,47 +1,52 @@
 package chenery.chive;
 
-import java.util.Optional;
+import java.util.Objects;
 
 /**
- *
+ * https://en.wikipedia.org/wiki/Portable_Game_Notation
  */
 public class Square {
 
-    private Piece piece;
-    private BoardLocation atBoardLocation;
+    private Column column;
+    private Row row;
 
-    public Square setPiece(Piece piece) {
-        this.piece = piece;
-        return this;
+    public Square(Column column, Row row) {
+        this.column = column;
+        this.row = row;
+    }
+    
+    public static Square at(Column column, Row row) {
+        return new Square(column, row)  ;
     }
 
-    public Square setAtBoardLocation(BoardLocation atBoardLocation) {
-        this.atBoardLocation = atBoardLocation;
-        return this;
+    public Column getColumn() {
+        return column;
     }
 
-    public Optional<Piece> getPiece() {
-        return piece != null ? Optional.of(piece) : Optional.empty();
+    public Row getRow() {
+        return row;
     }
 
-    public BoardLocation getAtBoardLocation() {
-        return atBoardLocation;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Square that = (Square) o;
+        return column == that.column &&
+                row == that.row;
     }
 
-    /**
-     * Remove the Piece from the Square by setting to null
-     * @return the Piece that was removed, or empty is there was no piece there.
-     */
-    public Optional<Piece> removePiece() {
-        Optional<Piece> optionalPiece = getPiece();
-        this.piece = null;
-        return optionalPiece;
+    @Override
+    public int hashCode() {
+        return Objects.hash(column, row);
     }
 
     @Override
     public String toString() {
-        String value = "[" + atBoardLocation.getColumn().name() + (atBoardLocation.getRow().ordinal() + 1) + ", ";
-        value += getPiece().isPresent() ? piece.toString() : "__";
-        return value + "]";
+        return "BoardLocation{" + column + "," + row +'}';
     }
 }

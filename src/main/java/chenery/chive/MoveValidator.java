@@ -1,6 +1,5 @@
 package chenery.chive;
 
-import chenery.chive.MoveResponse.Status;
 import chenery.chive.pieces.King;
 
 import java.util.HashSet;
@@ -8,11 +7,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static chenery.chive.Board.BLACK_KING_LOCATION;
-import static chenery.chive.Board.WHITE_KING_LOCATION;
-
 /**
- *
+ *  A class that handles the "game rules"
  */
 public class MoveValidator {
 
@@ -33,19 +29,19 @@ public class MoveValidator {
                                           boolean testForCheck) {
         // Validate correct player
         if (!byColour.equals(nextToMove)) {
-            return new MoveResponse(Status.INVALID).withMessage("Wrong player");
+            return MoveResponse.wrongPlayer();
         }
 
         // Validate is there a piece at the from location?
         if (!board.getPiece(move.getFrom()).isPresent()) {
-            return new MoveResponse(Status.INVALID).withMessage("No piece on this square");
+            return MoveResponse.noPiece();
         }
 
         final Piece pieceMoving = board.getPiece(move.getFrom()).get();
 
         // Validate the piece at 'from' is owned by the correct player
         if (!byColour.equals(pieceMoving.getColour())) {
-            return new MoveResponse(Status.INVALID).withMessage("Cannot move other player's piece");
+            return MoveResponse.wrongColour();
         }
 
         // Validate cannot attempt to capture own piece
@@ -53,7 +49,7 @@ public class MoveValidator {
         if (board.getPiece(move.getTo()).isPresent()) {
             Piece pieceAtTo = board.getPiece(move.getTo()).get();
             if (pieceAtTo.getColour() == byColour) {
-                return new MoveResponse(Status.INVALID).withMessage("Square occupied by your own piece");
+                return MoveResponse.invalidToSquare();
             }
 
             // it's a attempted capture, supply the piece at to location with the moveContext
@@ -62,44 +58,77 @@ public class MoveValidator {
 
         // Validate the 'to' board location is A valid move for the piece
         if (!pieceMoving.canMove(moveContext)) {
-            return new MoveResponse(Status.INVALID).withMessage("Piece cannot make this move");
+            return MoveResponse.invalidPieceMove();
         }
 
-        if (testForCheck && isPlayerInCheck(move, byColour, board)) {
-            return new MoveResponse(Status.INVALID).withMessage("Move would put King in 'check'");
+        // todo validate for any piece blocking a multiple square move (exception knight)
+
+        if (testForCheck) {
+            // test if moving player is now in 'check'
+            if (isPlayerInCheck(move, Colour.otherColour(byColour), board)) {
+                return MoveResponse.invalidExposeCheck();
+            }
+
+            if (isCheckmate(move, byColour, board)) {
+                return MoveResponse.checkmate();
+            }
+
+            // test if moving player 'checks' opponent
+            if (isPlayerInCheck(move, byColour, board)) {
+                return MoveResponse.check();
+            }
         }
 
-        MoveResponse okResponse = new MoveResponse(Status.OK).withMessage("Piece moved");
+        MoveResponse okResponse = MoveResponse.ok().withMove(move);
         Optional<Piece> optionalCapture = moveContext.getPieceAtToLocation();
 
         return optionalCapture.isPresent() ? okResponse.withPieceCaptured(optionalCapture.get()) : okResponse;
     }
 
-    private boolean isPlayerInCheck(Move move, Colour byColour, Board board) {
+    private boolean isPlayerInCheck(Move move, Colour playerWhoCanTakeKing, Board board) {
 
         // make the move on a new board to see if the player is now in check
         Board adjustedBoard = board.clone();
         adjustedBoard.move(move.getFrom(), move.getTo());
 
-        Colour otherColour = Colour.otherColour(byColour);
+        // check if the "playerWhoCanTakeKing" can now capture the King
         Set<Move> followOnMoves = new HashSet<>();
-        board.getPieces(otherColour).forEach(piece -> followOnMoves.addAll(piece.potentialMoves()));
+        adjustedBoard.getPieces(playerWhoCanTakeKing).forEach(piece -> followOnMoves.addAll(piece.potentialMoves()));
 
         for (Move followOnMove : followOnMoves) {
 
             // Don't test for 'check' to stop unnecessary recursion
             MoveResponse moveValidation = validateOptionalCheck(
-                    followOnMove, otherColour, otherColour, adjustedBoard, false);
+                    followOnMove, playerWhoCanTakeKing, playerWhoCanTakeKing, adjustedBoard, false);
 
             if (moveValidation.isOK() && moveValidation.getPieceCaptured().isPresent()) {
                 Piece pieceCaptured = moveValidation.getPieceCaptured().get();
-                BoardLocation kingLocation = byColour == Colour.WHITE ? WHITE_KING_LOCATION : BLACK_KING_LOCATION;
-                if (pieceCaptured.equals(new King(byColour, kingLocation))) {
+                if (pieceCaptured.equals(King.buildKing(Colour.otherColour(playerWhoCanTakeKing)))) {
                     return true;
                 }
             }
         }
 
         return false;
+    }
+
+    private boolean isCheckmate(Move move, Colour byColour, Board board) {
+
+        // make the move
+        Board adjustedBoard = board.clone();
+        adjustedBoard.move(move.getFrom(), move.getTo());
+
+        // consider all possible moves for other player.
+        // Is there one for which the other player is no longer in check?
+        Set<Move> followOnMoves = new HashSet<>();
+        adjustedBoard.getPieces(Colour.otherColour(byColour)).forEach(piece -> followOnMoves.addAll(piece.potentialMoves()));
+
+        for (Move followOnMove : followOnMoves) {
+            if (!isPlayerInCheck(followOnMove, byColour, adjustedBoard)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

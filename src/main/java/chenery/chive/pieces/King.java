@@ -1,21 +1,49 @@
 package chenery.chive.pieces;
 
-import chenery.chive.BoardLocation;
 import chenery.chive.Colour;
 import chenery.chive.Move;
-import chenery.chive.MoveContext;
 import chenery.chive.MovesBuilder;
 import chenery.chive.Piece;
+import chenery.chive.Square;
 
 import java.util.Set;
+
+import static chenery.chive.Board.BLACK_KING_SQUARE;
+import static chenery.chive.Board.WHITE_KING_SQUARE;
 
 /**
  *
  */
 public class King extends Piece {
 
-    public King(Colour colour, BoardLocation originalLocation) {
+    public King(Colour colour, Square originalLocation) {
         super(colour, originalLocation);
+    }
+
+    public static King buildKing(Colour forColour) {
+        Square kingLocation = forColour == Colour.WHITE ? WHITE_KING_SQUARE : BLACK_KING_SQUARE;
+        return new King(forColour, kingLocation);
+    }
+
+    public static King whiteAt(Square at) {
+        return buildKing(Colour.WHITE, at);
+    }
+
+    public static King blackAt(Square at) {
+        return buildKing(Colour.BLACK, at);
+    }
+
+    /**
+     * Use when you want to move the king to a new square, e.g. for a unit test
+     * @param forColour
+     * @param at
+     * @return
+     */
+    public static King buildKing(Colour forColour, Square at) {
+        Square kingLocation = forColour == Colour.WHITE ? WHITE_KING_SQUARE : BLACK_KING_SQUARE;
+        King king = new King(forColour, kingLocation);
+        king.setCurrentLocation(at);
+        return king;
     }
 
     @Override
@@ -34,12 +62,7 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean canMove(MoveContext moveContext) {
-        return potentialMoves().contains(moveContext.getMove());
-    }
-
-    @Override
     public String toString() {
-        return super.toString() + "K";
+        return getColour() == Colour.WHITE ? "\u2654" : "\u265A";
     }
 }

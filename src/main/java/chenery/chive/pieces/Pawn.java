@@ -1,7 +1,7 @@
 package chenery.chive.pieces;
 
 
-import chenery.chive.BoardLocation;
+import chenery.chive.Square;
 import chenery.chive.Colour;
 import chenery.chive.Move;
 import chenery.chive.MovesBuilder;
@@ -16,8 +16,16 @@ import java.util.Set;
  */
 public class Pawn extends Piece {
 
-    public Pawn(Colour colour, BoardLocation originalLocation) {
+    public Pawn(Colour colour, Square originalLocation) {
         super(colour, originalLocation);
+    }
+
+    public static Pawn whiteAt(Square originalLocation) {
+        return new Pawn(Colour.WHITE, originalLocation);
+    }
+
+    public static Pawn blackAt(Square originalLocation) {
+        return new Pawn(Colour.BLACK, originalLocation);
     }
 
     @Override
@@ -70,17 +78,17 @@ public class Pawn extends Piece {
      * This first time a pawn is moved it can move 2, so we know it's the first move
      * of the pawn is locations at it's starting position
      *
-     * @param boardLocation where the piece is located
+     * @param square where the piece is located
      * @return true if first move for this piece
      */
-    private boolean isFirstMove(BoardLocation boardLocation) {
-        return boardLocation.getRow() == Row.TWO && this.getColour() == Colour.WHITE
-                || boardLocation.getRow() == Row.SEVEN && this.getColour() == Colour.BLACK;
+    private boolean isFirstMove(Square square) {
+        return square.getRow() == Row.TWO && this.getColour() == Colour.WHITE
+                || square.getRow() == Row.SEVEN && this.getColour() == Colour.BLACK;
 
     }
 
     @Override
     public String toString() {
-        return super.toString() + "P";
+        return getColour() == Colour.WHITE ? "\u2659" : "\u265F";
     }
 }

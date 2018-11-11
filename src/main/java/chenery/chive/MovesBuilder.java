@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -12,10 +13,10 @@ import java.util.function.Predicate;
 public class MovesBuilder {
 
     private Colour colour;
-    private BoardLocation from;
+    private Square from;
     private Set<Move> moves = new HashSet<>();
 
-    public MovesBuilder(Colour colour, BoardLocation from) {
+    public MovesBuilder(Colour colour, Square from) {
         this.colour = colour;
         this.from = from;
     }
@@ -25,12 +26,36 @@ public class MovesBuilder {
         return Collections.unmodifiableSet(moves);
     }
 
+    /**
+     * Any number of rows forward
+     * @return a reference to self
+     */
+    public MovesBuilder forward() {
+        allSquares(this::forward);
+        return this;
+    }
+
+    public MovesBuilder backward() {
+        allSquares(this::backward);
+        return this;
+    }
+
+    public MovesBuilder left() {
+        allSquares(this::left);
+        return this;
+    }
+
+    public MovesBuilder right() {
+        allSquares(this::right);
+        return this;
+    }
+
     public MovesBuilder forwardOne() {
         forward(1);
         return this;
     }
 
-    public MovesBuilder forwardTwo(Predicate<BoardLocation> condition) {
+    public MovesBuilder forwardTwo(Predicate<Square> condition) {
         if (condition.test(from)) {
             forward(2);
         }
@@ -72,8 +97,24 @@ public class MovesBuilder {
         return this;
     }
 
-    private void forward(int numberRows) {
+    private MovesBuilder forward(int numberRows) {
         move(true, numberRows, true, 0);
+        return this;
+    }
+
+    private MovesBuilder backward(int numberRows) {
+        move(false, numberRows, true, 0);
+        return this;
+    }
+
+    private MovesBuilder left(int numberRows) {
+        move(true, 0, false, numberRows);
+        return this;
+    }
+
+    private MovesBuilder right(int numberRows) {
+        move(true, 0, true, numberRows);
+        return this;
     }
 
     private void move(boolean isForward, int rowDistance, boolean isRight, int columnDistance) {
@@ -87,7 +128,7 @@ public class MovesBuilder {
         Optional<Row> toRowOptional = Row.getByOrdinal(toRowOrdinal);
 
         if (toColumnOptional.isPresent() && toRowOptional.isPresent()) {
-            moves.add(new Move(from, new BoardLocation(toColumnOptional.get(), toRowOptional.get())));
+            moves.add(new Move(from, new Square(toColumnOptional.get(), toRowOptional.get())));
         }
     }
 
@@ -99,6 +140,12 @@ public class MovesBuilder {
         } else {
             // moving down the board
             return isForward ? fromRowOrdinal - rowDistance : fromRowOrdinal + rowDistance;
+        }
+    }
+
+    private static void allSquares(Function<Integer, MovesBuilder> function) {
+        for (int i = 1 ; i <= 8; i++) {
+            function.apply(i);
         }
     }
 }

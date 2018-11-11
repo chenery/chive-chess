@@ -13,17 +13,17 @@ public abstract class Piece {
     private Colour colour;
 
     // A way of uniquely identifying the piece when the are multiple instances, e.g. Pawn
-    private BoardLocation originalLocation;
+    private Square originalLocation;
 
-    private BoardLocation currentLocation;
+    private Square currentLocation;
 
-    public Piece(Colour colour, BoardLocation originalLocation) {
+    public Piece(Colour colour, Square originalLocation) {
         this.colour = colour;
         this.originalLocation = originalLocation;
         this.currentLocation = originalLocation;
     }
 
-    public Piece setCurrentLocation(BoardLocation currentLocation) {
+    public Piece setCurrentLocation(Square currentLocation) {
         this.currentLocation = currentLocation;
         return this;
     }
@@ -36,17 +36,19 @@ public abstract class Piece {
      */
     public abstract Set<Move> potentialMoves();
 
-    public abstract boolean canMove(MoveContext moveContext);
+    public boolean canMove(MoveContext moveContext) {
+        return potentialMoves().contains(moveContext.getMove());
+    }
 
     public Colour getColour() {
         return this.colour;
     }
 
-    public BoardLocation getOriginalLocation() {
+    public Square getOriginalLocation() {
         return originalLocation;
     }
 
-    public BoardLocation getCurrentLocation() {
+    public Square getCurrentLocation() {
         return currentLocation;
     }
 

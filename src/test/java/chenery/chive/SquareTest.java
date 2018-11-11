@@ -7,10 +7,10 @@ import static chenery.chive.Row.ONE;
 /**
  *
  */
-public class BoardLocationTest {
+public class SquareTest {
 
     @Test
     public void construct_colIndexRange_ok() {
-        new BoardLocation(Column.A, ONE);
+        new Square(Column.A, ONE);
     }
 }

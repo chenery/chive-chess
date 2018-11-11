@@ -11,8 +11,8 @@ import java.util.Optional;
 public class MoveContext {
     private Colour colour;
     private Move move;
-    private BoardLocation from;
-    private BoardLocation to;
+    private Square from;
+    private Square to;
     // Null if there is no piece captured
     private Piece pieceAtToLocation;
 
@@ -61,11 +61,11 @@ public class MoveContext {
         return colour;
     }
 
-    public BoardLocation getFrom() {
+    public Square getFrom() {
         return from;
     }
 
-    public BoardLocation getTo() {
+    public Square getTo() {
         return to;
     }
 

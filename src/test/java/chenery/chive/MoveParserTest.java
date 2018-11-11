@@ -23,8 +23,8 @@ public class MoveParserTest {
         // THEN move returned
         assertThat(optionalMove.isPresent()).isTrue();
         assertThat(optionalMove.get()).isEqualTo(
-                new Move(new BoardLocation(Column.A, Row.TWO),
-                        new BoardLocation(Column.A, Row.THREE)));
+                new Move(new Square(Column.A, Row.TWO),
+                        new Square(Column.A, Row.THREE)));
     }
 
     @Test
@@ -39,8 +39,8 @@ public class MoveParserTest {
         // THEN move returned
         assertThat(optionalMove.isPresent()).isTrue();
         assertThat(optionalMove.get()).isEqualTo(
-                new Move(new BoardLocation(Column.A, Row.ONE),
-                        new BoardLocation(Column.H, Row.EIGHT)));
+                new Move(new Square(Column.A, Row.ONE),
+                        new Square(Column.H, Row.EIGHT)));
     }
 
     @Test
@@ -68,8 +68,8 @@ public class MoveParserTest {
         // THEN move returned
         assertThat(optionalMove.isPresent()).isTrue();
         assertThat(optionalMove.get()).isEqualTo(
-                new Move(new BoardLocation(Column.A, Row.TWO),
-                        new BoardLocation(Column.A, Row.THREE)));
+                new Move(new Square(Column.A, Row.TWO),
+                        new Square(Column.A, Row.THREE)));
     }
 
     @Test
@@ -84,8 +84,8 @@ public class MoveParserTest {
         // THEN move returned
         assertThat(optionalMove.isPresent()).isTrue();
         assertThat(optionalMove.get()).isEqualTo(
-                new Move(new BoardLocation(Column.A, Row.TWO),
-                        new BoardLocation(Column.A, Row.THREE)));
+                new Move(new Square(Column.A, Row.TWO),
+                        new Square(Column.A, Row.THREE)));
     }
 
     @Test
