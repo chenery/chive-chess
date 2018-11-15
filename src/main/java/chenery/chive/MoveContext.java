@@ -28,35 +28,6 @@ public class MoveContext {
         return this;
     }
 
-    public int rowsMoved() {
-        return Math.abs(from.getRow().ordinal() - to.getRow().ordinal());
-    }
-
-    public int columnsMoved() {
-        return Math.abs(from.getColumn().ordinal() - to.getColumn().ordinal());
-    }
-
-    public RowDirection rowDirection() {
-        if (from.getRow().ordinal() == to.getRow().ordinal()) {
-            return RowDirection.NONE;
-        }
-
-        return from.getRow().ordinal() < to.getRow().ordinal() ? RowDirection.UP : RowDirection.DOWN;
-    }
-
-    public ColumnDirection columnDirection() {
-        if (from.getColumn().ordinal() == to.getColumn().ordinal()) {
-            return ColumnDirection.NONE;
-        }
-
-        return from.getColumn().ordinal() < to.getColumn().ordinal() ? ColumnDirection.RIGHT : ColumnDirection.LEFT;
-    }
-
-    public boolean isForwardMove() {
-        return (this.rowDirection() == RowDirection.UP && this.getColour() == Colour.WHITE)
-                || (this.rowDirection() == RowDirection.DOWN && this.getColour() == Colour.BLACK);
-    }
-
     public Colour getColour() {
         return colour;
     }

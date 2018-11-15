@@ -7,6 +7,7 @@ import static chenery.chive.MoveResponse.Status.CHECKMATE;
 import static chenery.chive.MoveResponse.Status.INVALID;
 import static chenery.chive.MoveResponse.Status.INVALID_EXPOSE_CHECK;
 import static chenery.chive.MoveResponse.Status.INVALID_NO_PIECE;
+import static chenery.chive.MoveResponse.Status.INVALID_PIECE_BLOCKING;
 import static chenery.chive.MoveResponse.Status.INVALID_PIECE_MOVE;
 import static chenery.chive.MoveResponse.Status.INVALID_TO_SQUARE;
 import static chenery.chive.MoveResponse.Status.INVALID_WRONG_COLOUR;
@@ -26,6 +27,7 @@ public class MoveResponse {
         INVALID_WRONG_COLOUR,
         INVALID_TO_SQUARE,
         INVALID_PIECE_MOVE,
+        INVALID_PIECE_BLOCKING,
         INVALID_EXPOSE_CHECK,
         CHECK,
         CHECKMATE,
@@ -71,6 +73,11 @@ public class MoveResponse {
                 .withMessage("Move would put King in 'check'");
     }
 
+    public static MoveResponse invalidPieceBlocking() {
+        return new MoveResponse(Status.INVALID_PIECE_BLOCKING)
+                .withMessage("Another piece is blocking this move");
+    }
+
     public static MoveResponse check() {
         return new MoveResponse(Status.CHECK)
                 .withMessage("Opponent is now in 'check'");
@@ -107,6 +114,7 @@ public class MoveResponse {
                 || status == INVALID_WRONG_COLOUR
                 || status == INVALID_TO_SQUARE
                 || status == INVALID_PIECE_MOVE
+                || status == INVALID_PIECE_BLOCKING
                 || status == INVALID_EXPOSE_CHECK;
     }
 

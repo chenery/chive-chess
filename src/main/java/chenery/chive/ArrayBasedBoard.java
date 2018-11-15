@@ -1,6 +1,7 @@
 package chenery.chive;
 
 import chenery.chive.pieces.King;
+import chenery.chive.pieces.Knight;
 import chenery.chive.pieces.Pawn;
 import chenery.chive.pieces.Rook;
 
@@ -26,7 +27,7 @@ public class ArrayBasedBoard implements Board {
     }
 
     public ArrayBasedBoard setUpColour(Colour colour) {
-        return setUpPawns(colour).setUpKing(colour).setUpRooks(colour);
+        return setUpPawns(colour).setUpKing(colour).setUpRooks(colour).setUpKnights(colour);
     }
 
     public ArrayBasedBoard setUpPawns(Colour colour) {
@@ -47,6 +48,12 @@ public class ArrayBasedBoard implements Board {
         Square leftRook = colour == Colour.WHITE ? Square.at(Column.A, Row.ONE) : Square.at(Column.H, Row.EIGHT);
         Square rightRook = colour == Colour.WHITE ? Square.at(Column.H, Row.ONE) : Square.at(Column.A, Row.EIGHT);
         return setUpPiece(new Rook(colour, leftRook)).setUpPiece(new Rook(colour, rightRook));
+    }
+
+    public ArrayBasedBoard setUpKnights(Colour colour) {
+        Square leftKnight = colour == Colour.WHITE ? Square.at(Column.B, Row.ONE) : Square.at(Column.G, Row.EIGHT);
+        Square rightRook = colour == Colour.WHITE ? Square.at(Column.G, Row.ONE) : Square.at(Column.B, Row.EIGHT);
+        return setUpPiece(new Knight(colour, leftKnight)).setUpPiece(new Knight(colour, rightRook));
     }
 
     public ArrayBasedBoard setUpPiece(Piece piece) {

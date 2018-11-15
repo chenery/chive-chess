@@ -1,6 +1,7 @@
 package chenery.chive;
 
 import chenery.chive.pieces.King;
+import chenery.chive.pieces.Knight;
 import chenery.chive.pieces.Pawn;
 import chenery.chive.pieces.Rook;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import static chenery.chive.MoveResponse.Status.CHECK;
 import static chenery.chive.MoveResponse.Status.CHECKMATE;
 import static chenery.chive.MoveResponse.Status.INVALID_EXPOSE_CHECK;
 import static chenery.chive.MoveResponse.Status.INVALID_NO_PIECE;
+import static chenery.chive.MoveResponse.Status.INVALID_PIECE_BLOCKING;
 import static chenery.chive.MoveResponse.Status.INVALID_PIECE_MOVE;
 import static chenery.chive.MoveResponse.Status.INVALID_TO_SQUARE;
 import static chenery.chive.MoveResponse.Status.INVALID_WRONG_COLOUR;
@@ -115,6 +117,65 @@ public class MoveValidatorTest {
         // THEN invalid
         assertThat(response.isInvalid()).isTrue();
         assertThat(response.getStatus()).isEqualTo(INVALID_PIECE_MOVE);
+    }
+
+    @Test
+    public void validate_invalidPieceBlocking_ownPawn() {
+
+        // GIVEN a board for which a pawn is immediately blocked by piece
+        Pawn a2Pawn = new Pawn(Colour.WHITE, Square.at(Column.A, Row.TWO));
+        Pawn a3Pawn = new Pawn(Colour.WHITE, Square.at(Column.A, Row.THREE));
+
+        // AND a move that would be valid, but is blocked
+        Board board = new ArrayBasedBoard().setUpPieces(a2Pawn, a3Pawn);
+        Move move = new Move(Square.at(Column.A, Row.TWO), Square.at(Column.A, Row.FOUR));
+
+        // WHEN validate
+        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+
+        // THEN invalid
+        assertThat(response.isInvalid()).isTrue();
+        assertThat(response.getStatus()).isEqualTo(INVALID_PIECE_BLOCKING);
+    }
+
+    @Test
+    public void validate_invalidPieceBlocking_rook_opposingPawn() {
+
+        // GIVEN a board for which a rook is immediately blocked by pawn
+        Rook rook = new Rook(Colour.WHITE, Square.at(Column.A, Row.ONE));
+        Pawn pawn = new Pawn(Colour.BLACK, Square.at(Column.A, Row.SEVEN));
+
+        // AND a move that would be valid, but is blocked
+        Board board = new ArrayBasedBoard().setUpPieces(rook, pawn);
+        Move move = new Move(Square.at(Column.A, Row.ONE), Square.at(Column.A, Row.EIGHT));
+
+        // WHEN validate
+        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+
+        // THEN invalid
+        assertThat(response.isInvalid()).isTrue();
+        assertThat(response.getStatus()).isEqualTo(INVALID_PIECE_BLOCKING);
+    }
+
+    // NOTE: this test is an exceptional case for invalidPieceBlocking
+    @Test
+    public void validate_ok_knight_opposingPawn() {
+
+        // GIVEN a board for which a knight passes 'over' pawn
+        Knight knight = Knight.whiteAt(Square.at(Column.B, Row.ONE));
+        Pawn b2Pawn = Pawn.whiteAt(Square.at(Column.B, Row.TWO));
+        Pawn c2Pawn = Pawn.whiteAt(Square.at(Column.C, Row.TWO));
+
+        // AND a move that would be valid, but is blocked
+        Board board = new ArrayBasedBoard().setUpPieces(knight, b2Pawn, c2Pawn);
+        Move move = new Move(Square.at(Column.B, Row.ONE), Square.at(Column.C, Row.THREE));
+
+        // WHEN validate
+        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+
+        // THEN ok
+        assertThat(response.isOK()).isTrue();
+        assertThat(response.getStatus()).isEqualTo(OK);
     }
 
     @Test

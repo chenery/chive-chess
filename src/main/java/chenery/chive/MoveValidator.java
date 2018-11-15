@@ -61,7 +61,14 @@ public class MoveValidator {
             return MoveResponse.invalidPieceMove();
         }
 
-        // todo validate for any piece blocking a multiple square move (exception knight)
+        // validate for any piece blocking a multiple square move (exception knight)
+        if (!move.getSquaresPassed().stream()
+                .filter(square -> board.getPiece(square).isPresent())
+                .map(board::getPiece)
+                .collect(Collectors.toSet())
+                .isEmpty()) {
+            return MoveResponse.invalidPieceBlocking();
+        }
 
         if (testForCheck) {
             // test if moving player is now in 'check'
@@ -121,7 +128,14 @@ public class MoveValidator {
         // consider all possible moves for other player.
         // Is there one for which the other player is no longer in check?
         Set<Move> followOnMoves = new HashSet<>();
-        adjustedBoard.getPieces(Colour.otherColour(byColour)).forEach(piece -> followOnMoves.addAll(piece.potentialMoves()));
+        adjustedBoard.getPieces(Colour.otherColour(byColour))
+                .forEach(piece -> followOnMoves.addAll(piece.potentialMoves()));
+
+        // Can't have checkmate if no moves -> todo review and test no moves /stalemate scenario
+        // At the moment no moves may occur for a reduced board unit test.
+        if (followOnMoves.isEmpty()) {
+            return false;
+        }
 
         for (Move followOnMove : followOnMoves) {
             if (!isPlayerInCheck(followOnMove, byColour, adjustedBoard)) {
