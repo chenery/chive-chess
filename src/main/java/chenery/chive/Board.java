@@ -29,6 +29,8 @@ public interface Board extends Cloneable {
 
     Square WHITE_KING_SQUARE = new Square(Column.E, Row.ONE);
     Square BLACK_KING_SQUARE = new Square(Column.E, Row.EIGHT);
+    Square WHITE_QUEEN_SQUARE = new Square(Column.D, Row.ONE);
+    Square BLACK_QUEEN_SQUARE = new Square(Column.D, Row.EIGHT);
 
     Optional<Piece> getPiece(Square at);
 

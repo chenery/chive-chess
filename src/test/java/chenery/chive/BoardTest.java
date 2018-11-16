@@ -1,7 +1,11 @@
 package chenery.chive;
 
+import chenery.chive.pieces.Bishop;
 import chenery.chive.pieces.King;
+import chenery.chive.pieces.Knight;
 import chenery.chive.pieces.Pawn;
+import chenery.chive.pieces.Queen;
+import chenery.chive.pieces.Rook;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -24,37 +28,83 @@ public class BoardTest {
         for (Row row : Row.values()) {
 
             for (Column column : Column.values()) {
-                Square testLocation = new Square(column, row);
+                Square square = new Square(column, row);
 
                 if (row == Row.ONE) {
-                    if (column == Column.E) {
-                        assertThat(board.getPiece(testLocation).isPresent()).isTrue();
-                        assertThat(board.getPiece(testLocation).get())
-                                .isEqualTo(new King(Colour.WHITE, testLocation));
+                    assertThat(board.getPiece(square).isPresent()).isTrue();
+
+                    switch (column) {
+                        case A:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Rook.whiteAt(square));
+                            break;
+                        case B:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Knight.whiteAt(square));
+                            break;
+                        case C:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Bishop.whiteAt(square));
+                            break;
+                        case D:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Queen.whiteAt(square));
+                            break;
+                        case E:
+                            assertThat(board.getPiece(square).get()).isEqualTo(King.whiteAt(square));
+                            break;
+                        case F:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Bishop.whiteAt(square));
+                            break;
+                        case G:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Knight.whiteAt(square));
+                            break;
+                        case H:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Rook.whiteAt(square));
+                            break;
                     }
 
                 } else if (row == Row.TWO) {
                     // THEN all white pawns exist
-                    assertThat(board.getPiece(testLocation).isPresent()).isTrue();
-                    assertThat(board.getPiece(testLocation).get())
-                            .isEqualTo(new Pawn(Colour.WHITE, testLocation));
+                    assertThat(board.getPiece(square).isPresent()).isTrue();
+                    assertThat(board.getPiece(square).get())
+                            .isEqualTo(new Pawn(Colour.WHITE, square));
                 } else if (row == Row.SEVEN) {
                     // AND all black pawns exist
-                    assertThat(board.getPiece(testLocation).isPresent()).isTrue();
-                    assertThat(board.getPiece(testLocation).get())
-                            .isEqualTo(new Pawn(Colour.BLACK, testLocation));
+                    assertThat(board.getPiece(square).isPresent()).isTrue();
+                    assertThat(board.getPiece(square).get())
+                            .isEqualTo(new Pawn(Colour.BLACK, square));
 
                 } else if (row == Row.EIGHT) {
 
-                    if (column == Column.E) {
-                        assertThat(board.getPiece(testLocation).isPresent()).isTrue();
-                        assertThat(board.getPiece(testLocation).get())
-                                .isEqualTo(new King(Colour.BLACK, testLocation));
+                    assertThat(board.getPiece(square).isPresent()).isTrue();
+
+                    switch (column) {
+                        case A:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Rook.blackAt(square));
+                            break;
+                        case B:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Knight.blackAt(square));
+                            break;
+                        case C:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Bishop.blackAt(square));
+                            break;
+                        case D:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Queen.blackAt(square));
+                            break;
+                        case E:
+                            assertThat(board.getPiece(square).get()).isEqualTo(King.blackAt(square));
+                            break;
+                        case F:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Bishop.blackAt(square));
+                            break;
+                        case G:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Knight.blackAt(square));
+                            break;
+                        case H:
+                            assertThat(board.getPiece(square).get()).isEqualTo(Rook.blackAt(square));
+                            break;
                     }
 
                 } else {
                     // AND no other pieces
-                    assertThat(board.getPiece(testLocation).isPresent()).isFalse();
+                    assertThat(board.getPiece(square).isPresent()).isFalse();
                 }
             }
         }

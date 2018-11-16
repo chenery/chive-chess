@@ -32,7 +32,7 @@ public class SinglePlayerCommandLineApp {
 
     private void whitePlayerTurn() {
         game.printBoard();
-        System.out.println("\nEnter move (e.g. a2,a3):");
+        System.out.println("\nEnter move white player (e.g. a2,a3):");
         String moveText = keyboard.nextLine();
         Optional<Move> moveParseResponse = MoveParser.parse(moveText);
 

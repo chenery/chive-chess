@@ -11,18 +11,18 @@ import java.util.Set;
 /**
  *
  */
-public class Rook extends Piece {
+public class Queen extends Piece {
 
-    public Rook(Colour colour, Square originalLocation) {
+    public Queen(Colour colour, Square originalLocation) {
         super(colour, originalLocation);
     }
 
-    public static Rook whiteAt(Square at) {
-        return new Rook(Colour.WHITE, at);
+    public static Queen whiteAt(Square at) {
+        return new Queen(Colour.WHITE, at);
     }
 
-    public static Rook blackAt(Square at) {
-        return new Rook(Colour.BLACK, at);
+    public static Queen blackAt(Square at) {
+        return new Queen(Colour.BLACK, at);
     }
 
     @Override
@@ -32,11 +32,15 @@ public class Rook extends Piece {
                 .backward()
                 .left()
                 .right()
+                .forwardLeftDiagonal()
+                .forwardRightDiagonal()
+                .backLeftDiagonal()
+                .backRightDiagonal()
                 .getMoves();
     }
 
     @Override
     public String toString() {
-        return getColour() == Colour.WHITE ? "\u2656" : "\u265C";
+        return getColour() == Colour.WHITE ? "\u2655" : "\u265B";
     }
 }

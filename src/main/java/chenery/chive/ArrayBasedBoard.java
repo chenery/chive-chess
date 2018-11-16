@@ -1,8 +1,10 @@
 package chenery.chive;
 
+import chenery.chive.pieces.Bishop;
 import chenery.chive.pieces.King;
 import chenery.chive.pieces.Knight;
 import chenery.chive.pieces.Pawn;
+import chenery.chive.pieces.Queen;
 import chenery.chive.pieces.Rook;
 
 import java.util.List;
@@ -27,7 +29,12 @@ public class ArrayBasedBoard implements Board {
     }
 
     public ArrayBasedBoard setUpColour(Colour colour) {
-        return setUpPawns(colour).setUpKing(colour).setUpRooks(colour).setUpKnights(colour);
+        return setUpPawns(colour)
+                .setUpKing(colour)
+                .setUpQueen(colour)
+                .setUpRooks(colour)
+                .setUpKnights(colour)
+                .setUpBishops(colour);
     }
 
     public ArrayBasedBoard setUpPawns(Colour colour) {
@@ -44,6 +51,11 @@ public class ArrayBasedBoard implements Board {
         return setUpPiece(new King(colour, kingLocation));
     }
 
+    public ArrayBasedBoard setUpQueen(Colour colour) {
+        Square queenLocation = colour == Colour.WHITE ? WHITE_QUEEN_SQUARE : BLACK_QUEEN_SQUARE;
+        return setUpPiece(new Queen(colour, queenLocation));
+    }
+
     public ArrayBasedBoard setUpRooks(Colour colour) {
         Square leftRook = colour == Colour.WHITE ? Square.at(Column.A, Row.ONE) : Square.at(Column.H, Row.EIGHT);
         Square rightRook = colour == Colour.WHITE ? Square.at(Column.H, Row.ONE) : Square.at(Column.A, Row.EIGHT);
@@ -54,6 +66,12 @@ public class ArrayBasedBoard implements Board {
         Square leftKnight = colour == Colour.WHITE ? Square.at(Column.B, Row.ONE) : Square.at(Column.G, Row.EIGHT);
         Square rightRook = colour == Colour.WHITE ? Square.at(Column.G, Row.ONE) : Square.at(Column.B, Row.EIGHT);
         return setUpPiece(new Knight(colour, leftKnight)).setUpPiece(new Knight(colour, rightRook));
+    }
+
+    public ArrayBasedBoard setUpBishops(Colour colour) {
+        Square leftBishop = colour == Colour.WHITE ? Square.at(Column.C, Row.ONE) : Square.at(Column.F, Row.EIGHT);
+        Square rightBishop = colour == Colour.WHITE ? Square.at(Column.F, Row.ONE) : Square.at(Column.C, Row.EIGHT);
+        return setUpPiece(new Bishop(colour, leftBishop)).setUpPiece(new Bishop(colour, rightBishop));
     }
 
     public ArrayBasedBoard setUpPiece(Piece piece) {
@@ -103,17 +121,47 @@ public class ArrayBasedBoard implements Board {
         });
     }
 
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
+    private static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+    private static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
+
+    private static final String ANSI_BLACK = "\u001B[30m";
+    private static final String ANSI_WHITE = "\u001B[37m";
+
     @Override
     public void print() {
         System.out.print("\n");
+        String backgroundStr = ANSI_WHITE_BACKGROUND;
+
+        printColumnHeader();
+
         for (int i = NUM_ROWS - 1; i >= 0 ; i--) {
+
+            System.out.print(i + 1);
+            System.out.print(" ");
+
+            backgroundStr = backgroundStr.equals(ANSI_CYAN_BACKGROUND) ? ANSI_WHITE_BACKGROUND : ANSI_CYAN_BACKGROUND;
             for (int j = 0; j < NUM_COLS ; j++) {
+                backgroundStr = backgroundStr.equals(ANSI_CYAN_BACKGROUND) ? ANSI_WHITE_BACKGROUND : ANSI_CYAN_BACKGROUND;
                 Piece piece = board[i][j];
-                Square atLocation = new Square(Column.getByOrdinal(j).get(), Row.getByOrdinal(i).get());
-                System.out.print(getSquarePrintValue(atLocation, piece) + "\t");
+                System.out.print(backgroundStr + " " + getSquarePrintValue(piece) + " " + ANSI_RESET);
             }
+
+            System.out.print(" ");
+            System.out.print(i + 1);
             System.out.println();
         }
+
+        printColumnHeader();
+    }
+
+    private void printColumnHeader() {
+        System.out.print(" ");
+        for (int i = 0; i < 8; i++) {
+            System.out.print(" " + Column.getByOrdinal(i).get().name().toLowerCase() + " ");
+        }
+        System.out.println();
     }
 
     @Override
@@ -147,9 +195,13 @@ public class ArrayBasedBoard implements Board {
 
     // todo equals and hashcode for deep comparison of boards
 
-    private String getSquarePrintValue(Square atSquare, Piece piece) {
+    private String getSquareVerbosePrintValue(Square atSquare, Piece piece) {
         String value = "[" + atSquare.getColumn().name() + (atSquare.getRow().ordinal() + 1) + ", ";
         value += piece != null ? piece.toString() : "_";
         return value + "]";
+    }
+
+    private String getSquarePrintValue(Piece piece) {
+        return piece != null ? piece.toString() : " ";
     }
 }

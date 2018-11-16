@@ -73,16 +73,36 @@ public class MovesBuilder {
         return move(true, 0, true, 1);
     }
 
+    public MovesBuilder forwardLeftDiagonal() {
+        allSquares(this::forwardLeftDiagonal);
+        return this;
+    }
+
     public MovesBuilder forwardLeftDiagonal(int distance) {
         return move(true, distance, false, distance);
+    }
+
+    public MovesBuilder forwardRightDiagonal() {
+        allSquares(this::forwardRightDiagonal);
+        return this;
     }
 
     public MovesBuilder forwardRightDiagonal(int distance) {
         return move(true, distance, true, distance);
     }
 
+    public MovesBuilder backLeftDiagonal() {
+        allSquares(this::backLeftDiagonal);
+        return this;
+    }
+
     public MovesBuilder backLeftDiagonal(int distance) {
         return move(false, distance, false, distance);
+    }
+
+    public MovesBuilder backRightDiagonal() {
+        allSquares(this::backRightDiagonal);
+        return this;
     }
 
     public MovesBuilder backRightDiagonal(int distance) {
