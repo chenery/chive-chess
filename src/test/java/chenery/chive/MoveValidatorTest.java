@@ -1,8 +1,10 @@
 package chenery.chive;
 
+import chenery.chive.pieces.Bishop;
 import chenery.chive.pieces.King;
 import chenery.chive.pieces.Knight;
 import chenery.chive.pieces.Pawn;
+import chenery.chive.pieces.Queen;
 import chenery.chive.pieces.Rook;
 import org.junit.Test;
 
@@ -19,6 +21,7 @@ import static chenery.chive.MoveResponse.Status.INVALID_TO_SQUARE;
 import static chenery.chive.MoveResponse.Status.INVALID_WRONG_COLOUR;
 import static chenery.chive.MoveResponse.Status.INVALID_WRONG_PLAYER;
 import static chenery.chive.MoveResponse.Status.OK;
+import static chenery.chive.MoveResponse.Status.STALEMATE;
 import static org.fest.assertions.Assertions.assertThat;
 
 /**
@@ -167,7 +170,8 @@ public class MoveValidatorTest {
         Pawn c2Pawn = Pawn.whiteAt(Square.at(Column.C, Row.TWO));
 
         // AND a move that would be valid, but is blocked
-        Board board = new ArrayBasedBoard().setUpPieces(knight, b2Pawn, c2Pawn);
+        Board board = new ArrayBasedBoard().setUpKing(Colour.BLACK).setUpPieces(knight, b2Pawn, c2Pawn);
+
         Move move = new Move(Square.at(Column.B, Row.ONE), Square.at(Column.C, Row.THREE));
 
         // WHEN validate
@@ -252,6 +256,67 @@ public class MoveValidatorTest {
         // THEN check
         assertThat(response.isOK()).isTrue();
         assertThat(response.getStatus()).isEqualTo(CHECKMATE);
+    }
+
+    @Test
+    public void validate_checkmate_withFromRealGame() {
+
+        // GIVEN real board
+        Board board = new ArrayBasedBoard()
+                .setUpPieces(
+                        Rook.whiteAt(Square.at(Column.A, Row.ONE)),
+                        Knight.whiteAt(Square.at(Column.B, Row.ONE)),
+                        Bishop.whiteAt(Square.at(Column.C, Row.ONE)),
+                        King.whiteAt(Square.at(Column.E, Row.ONE)),
+                        Knight.whiteAt(Square.at(Column.G, Row.ONE)),
+                        Pawn.whiteAt(Square.at(Column.A, Row.TWO)),
+                        Pawn.whiteAt(Square.at(Column.B, Row.TWO)),
+                        Pawn.whiteAt(Square.at(Column.C, Row.TWO)),
+                        Pawn.whiteAt(Square.at(Column.F, Row.TWO)),
+                        Pawn.whiteAt(Square.at(Column.G, Row.TWO)),
+                        Pawn.whiteAt(Square.at(Column.E, Row.THREE)),
+                        Pawn.whiteAt(Square.at(Column.D, Row.FIVE)),
+                        Bishop.whiteAt(Square.at(Column.C, Row.SIX)),
+                        Queen.whiteAt(Square.at(Column.E, Row.SEVEN)),
+                        Rook.whiteAt(Square.at(Column.E, Row.EIGHT)),
+                        Pawn.blackAt(Square.at(Column.A, Row.THREE)),
+                        Pawn.blackAt(Square.at(Column.C, Row.FIVE)),
+                        Pawn.blackAt(Square.at(Column.F, Row.FIVE)),
+                        Pawn.blackAt(Square.at(Column.B, Row.SIX)),
+                        King.blackAt(Square.at(Column.C, Row.SEVEN)),
+                        Bishop.blackAt(Square.at(Column.D, Row.SEVEN)),
+                        Rook.blackAt(Square.at(Column.A, Row.EIGHT)));
+
+        // AND a move for white that should be checkmate
+        Move move = new Move(Square.at(Column.E, Row.SEVEN), Square.at(Column.D, Row.SEVEN));
+
+        // WHEN validate
+        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+
+        // THEN check
+        assertThat(response.isOK()).isTrue();
+        assertThat(response.getStatus()).isEqualTo(CHECKMATE);
+    }
+
+    @Test
+    public void validate_staleMate() {
+
+        // GIVEN stalemate move as per https://en.wikipedia.org/wiki/Stalemate
+        Board board = new ArrayBasedBoard()
+                .setUpPieces(
+                        King.whiteAt(Square.at(Column.F, Row.SEVEN)),
+                        Queen.whiteAt(Square.at(Column.F, Row.SIX)),
+                        King.blackAt(Square.at(Column.H, Row.EIGHT)));
+
+        // AND a move for white that should be checkmate
+        Move move = new Move(Square.at(Column.F, Row.SIX), Square.at(Column.G, Row.SIX));
+
+        // WHEN validate
+        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+
+        // THEN check
+        assertThat(response.isOK()).isTrue();
+        assertThat(response.getStatus()).isEqualTo(STALEMATE);
     }
 
     @Test

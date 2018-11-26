@@ -1,8 +1,6 @@
 package chenery.chive;
 
 
-import chenery.chive.MoveResponse.Status;
-
 /**
  * todo allow different variants of the game, rather than just against the computer
  *
@@ -47,16 +45,8 @@ public class Game {
         // update board
         board.move(moveContext.getFrom(), moveContext.getTo());
 
-        // todo if check for other player, this should be reported - also the "check" should be noted,
-        // as it will impact the next turn
-
         // record move in history
         history.recordMove(moveContext);
-
-        // declare winner
-        if (isWinningMove(moveContext, board)) {
-            return new MoveResponse(Status.CHECKMATE);
-        }
 
         nextToMove = nextToMove == Colour.WHITE ? Colour.BLACK : Colour.WHITE;
 
@@ -81,10 +71,5 @@ public class Game {
 
     public static void main(String[] args) {
         Game game = new Game();
-    }
-
-    private boolean isWinningMove(MoveContext moveContext, Board board) {
-        // todo decide on this
-        return false;
     }
 }

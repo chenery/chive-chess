@@ -13,6 +13,7 @@ import static chenery.chive.MoveResponse.Status.INVALID_TO_SQUARE;
 import static chenery.chive.MoveResponse.Status.INVALID_WRONG_COLOUR;
 import static chenery.chive.MoveResponse.Status.INVALID_WRONG_PLAYER;
 import static chenery.chive.MoveResponse.Status.OK;
+import static chenery.chive.MoveResponse.Status.STALEMATE;
 
 /**
  *  todo perhaps this can provide the https://en.wikipedia.org/wiki/Algebraic_notation_(chess)?
@@ -88,6 +89,11 @@ public class MoveResponse {
                 .withMessage("Checkmate!'");
     }
 
+    public static MoveResponse stalemate() {
+        return new MoveResponse(Status.STALEMATE)
+                .withMessage("Stalemate!'");
+    }
+
     public MoveResponse withMessage(String message) {
         this.message = message;
         return this;
@@ -121,7 +127,8 @@ public class MoveResponse {
     public boolean isOK() {
         return status == OK
                 || status == CHECK
-                || status == CHECKMATE;
+                || status == CHECKMATE
+                || status == STALEMATE;
     }
 
     public Optional<Piece> getPieceCaptured() {

@@ -109,6 +109,6 @@ public class Square {
 
     @Override
     public String toString() {
-        return "Square{" + column + "," + row +'}';
+        return column.name().toLowerCase() + (row.ordinal() + 1);
     }
 }

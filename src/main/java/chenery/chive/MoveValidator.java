@@ -9,11 +9,13 @@ import java.util.stream.Collectors;
 
 /**
  *  A class that handles the "game rules"
+ *
+ *  todo tidy this class up
  */
 public class MoveValidator {
 
     public MoveResponse validate(Move move, Colour byColour, Colour nextToMove, Board board) {
-        return validateOptionalCheck(move, byColour, nextToMove, board, true);
+        return validateOptionalCheck(move, byColour, nextToMove, board, true, true);
     }
 
     public Set<Move> validMoves(Colour forColour, Board board) {
@@ -21,12 +23,12 @@ public class MoveValidator {
         board.getPieces(forColour).forEach(piece -> moves.addAll(piece.potentialMoves()));
 
         return moves.stream()
-                .filter(move -> validate(move, forColour, forColour, board).isOK())
+                .filter(move -> validateOptionalCheck(move, forColour, forColour, board, true, false).isOK())
                 .collect(Collectors.toSet());
     }
 
     private MoveResponse validateOptionalCheck(Move move, Colour byColour, Colour nextToMove, Board board,
-                                          boolean testForCheck) {
+                                          boolean testForCheck, boolean testForStaleMate) {
         // Validate correct player
         if (!byColour.equals(nextToMove)) {
             return MoveResponse.wrongPlayer();
@@ -76,12 +78,20 @@ public class MoveValidator {
                 return MoveResponse.invalidExposeCheck();
             }
 
-            if (isCheckmate(move, byColour, board)) {
+            // only check for check once here
+            final boolean isPlayerInCheck = isPlayerInCheck(move, byColour, board);
+
+            // ... as check is a precondition of checkmate
+            if (isCheckMate(isPlayerInCheck, move, byColour, board)) {
                 return MoveResponse.checkmate();
             }
 
+            if (testForStaleMate && isStaleMate(isPlayerInCheck, move, byColour, board)) {
+                return MoveResponse.stalemate();
+            }
+
             // test if moving player 'checks' opponent
-            if (isPlayerInCheck(move, byColour, board)) {
+            if (isPlayerInCheck) {
                 return MoveResponse.check();
             }
         }
@@ -106,7 +116,7 @@ public class MoveValidator {
 
             // Don't test for 'check' to stop unnecessary recursion
             MoveResponse moveValidation = validateOptionalCheck(
-                    followOnMove, playerWhoCanTakeKing, playerWhoCanTakeKing, adjustedBoard, false);
+                    followOnMove, playerWhoCanTakeKing, playerWhoCanTakeKing, adjustedBoard, false, false);
 
             if (moveValidation.isOK() && moveValidation.getPieceCaptured().isPresent()) {
                 Piece pieceCaptured = moveValidation.getPieceCaptured().get();
@@ -119,30 +129,33 @@ public class MoveValidator {
         return false;
     }
 
-    private boolean isCheckmate(Move move, Colour byColour, Board board) {
+    private boolean isCheckMate(boolean isInCheck, Move move, Colour byColour, Board board) {
+
+        // check is a precondition of checkmate
+        if (!isInCheck) {
+            return false;
+        }
 
         // make the move
         Board adjustedBoard = board.clone();
         adjustedBoard.move(move.getFrom(), move.getTo());
 
-        // consider all possible moves for other player.
-        // Is there one for which the other player is no longer in check?
-        Set<Move> followOnMoves = new HashSet<>();
-        adjustedBoard.getPieces(Colour.otherColour(byColour))
-                .forEach(piece -> followOnMoves.addAll(piece.potentialMoves()));
+        // if there are no valid moves for other colour, and in check, it's checkmate
+        return validMoves(Colour.otherColour(byColour), adjustedBoard).isEmpty();
+    }
 
-        // Can't have checkmate if no moves -> todo review and test no moves /stalemate scenario
-        // At the moment no moves may occur for a reduced board unit test.
-        if (followOnMoves.isEmpty()) {
+    private boolean isStaleMate(boolean isInCheck, Move move, Colour byColour, Board board) {
+
+        // no check is a precondition of stalemate
+        if (isInCheck) {
             return false;
         }
 
-        for (Move followOnMove : followOnMoves) {
-            if (!isPlayerInCheck(followOnMove, byColour, adjustedBoard)) {
-                return false;
-            }
-        }
+        // make the move
+        Board adjustedBoard = board.clone();
+        adjustedBoard.move(move.getFrom(), move.getTo());
 
-        return true;
+        // if there are no valid moves for other colour, and not in check, it's stalemate
+        return validMoves(Colour.otherColour(byColour), adjustedBoard).isEmpty();
     }
 }

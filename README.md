@@ -30,7 +30,7 @@ coverage is around 90%.
 # Features for the Future 
 
 - Feedback chess game/move notation to user
-- Stalemate/draw
+- Stalemate/draw, which is handled by the app
 - Castling
 - Pawn promotion
 - Implement pawn en passant https://en.wikipedia.org/wiki/En_passant
@@ -43,3 +43,4 @@ coverage is around 90%.
 # Other Considerations
 
 - Upgrade to Java 9/10/11
+- Change MoveValidator to BoardValidator?
