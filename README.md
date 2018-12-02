@@ -19,7 +19,7 @@ Additionally the author would like to improve his chess playing abilities!
 - Unit tests: Junit testing is provided, with fluent assertions.  Most attention is made to the game rules.  Line 
 coverage is around 90%.
 - Java 8's 'Optional' is used to avoid null references.
-- Java 8's functional idioms - lambda expressions, functional interfaces, Streams, e.g.[MoveValidator.java](https://github.com/chenery/chive-chess/blob/master/src/main/java/chenery/chive/MoveValidator.java).
+- Java 8's functional idioms - lambda expressions, functional interfaces, Streams, e.g. [MoveValidator.java](https://github.com/chenery/chive-chess/blob/master/src/main/java/chenery/chive/MoveValidator.java).
 - Static factory methods for object construction to reduce the verbosity of creating 'new' objects.
 - Builder methods for more complex classes that require more granular control, e.g. MoveBuilder, ArrayBasedBoard 
 - ...

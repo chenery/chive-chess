@@ -1,16 +1,17 @@
 package chenery.chive;
 
-import chenery.chive.MoveResponse.Status;
 import chenery.chive.pieces.King;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static chenery.chive.MoveResponse.Status.OK;
 
 /**
  *  A class that handles the "game rules"
@@ -35,10 +36,8 @@ public class MoveValidator {
      * @return A MoveResponse that will explain if the move is valid or invalid, and subsequent game state
      */
     public static MoveResponse validate(Move move, Colour byColour, Colour nextToMove, Board board) {
-
-        List<Function<Context, MoveResponse>> allChecks = new ArrayList<>(ALL_VALIDATIONS);
+        List<Function<Context, MoveResponse>> allChecks = new ArrayList<>(ALL_RULES);
         allChecks.add(MoveValidator::validCheckOrEndGame);
-
         return validateRules(new Context(move, byColour, nextToMove, board), allChecks);
     }
 
@@ -50,17 +49,15 @@ public class MoveValidator {
      * @return a set of valid moves
      */
     public static Set<Move> validMoves(Colour forColour, Board board) {
-        Set<Move> moves = new HashSet<>();
-        board.getPieces(forColour).forEach(piece -> moves.addAll(piece.potentialMoves()));
-
-        // We don't need to test for checkmate or stalemateOrCheck to say whether a move is valid
-        return moves.stream()
-                .filter(move -> validateRules(new Context(move, forColour, forColour, board), ALL_VALIDATIONS).isOK())
+        return board.getPieces(forColour).stream()
+                .map(Piece::potentialMoves)
+                .flatMap(Collection::stream)
+                .filter(move -> validateRules(new Context(move, forColour, forColour, board), ALL_RULES).isOK())
                 .collect(Collectors.toSet());
     }
 
     // The complete set of validations that will produce an invalid MoveResponse
-    private static final List<Function<Context, MoveResponse>> ALL_VALIDATIONS = Arrays.asList(
+    private static final List<Function<Context, MoveResponse>> ALL_RULES = Arrays.asList(
             MoveValidator::wrongPlayer,
             MoveValidator::noPiece,
             MoveValidator::wrongColour,
@@ -68,6 +65,15 @@ public class MoveValidator {
             MoveValidator::invalidPieceMove,
             MoveValidator::invalidPieceBlocking,
             MoveValidator::invalidExposeCheck);
+
+    // The complete set of validations that will produce an invalid MoveResponse
+    private static final List<Function<Context, MoveResponse>> ALL_RULES_EX_EXPOSE_CHECK = Arrays.asList(
+            MoveValidator::wrongPlayer,
+            MoveValidator::noPiece,
+            MoveValidator::wrongColour,
+            MoveValidator::invalidToSquare,
+            MoveValidator::invalidPieceMove,
+            MoveValidator::invalidPieceBlocking);
 
     /**
      * @param context State required to validate the move
@@ -77,19 +83,17 @@ public class MoveValidator {
      */
     private static MoveResponse validateRules(Context context, List<Function<Context, MoveResponse>> rules) {
 
-        // The list of rules allows this generic evaluate of each rule, only if the previous was OK/not invalid
-        for (Function<Context, MoveResponse> rule : rules) {
-            MoveResponse moveResponse = rule.apply(context);
-
-            if (moveResponse.getStatus() != Status.OK) {
-                return moveResponse;
-            }
-        }
-
-        MoveResponse okResponse = MoveResponse.ok().withMove(context.getMove());
-        Optional<Piece> optionalCapture = pieceCaptured(context);
-
-        return optionalCapture.isPresent() ? okResponse.withPieceCaptured(optionalCapture.get()) : okResponse;
+        // The list of rules allows this generic evaluate of each rule, only if the previous was OK
+        return rules.stream()
+                .map(rule -> rule.apply(context))
+                .filter(moveResponse -> moveResponse.getStatus() != OK)
+                .findFirst()
+                .orElseGet(() -> {
+                    // Decorate the OK with the piece captured
+                    MoveResponse okResponse = MoveResponse.ok().withMove(context.getMove());
+                    Optional<Piece> capture = pieceCaptured(context);
+                    return capture.isPresent() ? okResponse.withPieceCaptured(capture.get()) : okResponse;
+                });
     }
 
     private static MoveResponse wrongPlayer(Context context) {
@@ -164,13 +168,10 @@ public class MoveValidator {
     }
 
     private static MoveResponse validCheckOrEndGame(Context context) {
-
         final boolean isPlayerInCheck = isPlayerInCheck(context.getMove(), context.getByColour(), context.getBoard());
-
         if (moveEndsGame(context)) {
             return isPlayerInCheck ? MoveResponse.checkmate() : MoveResponse.stalemate();
         }
-
         return isPlayerInCheck ? MoveResponse.check() : MoveResponse.ok();
     }
 
@@ -185,31 +186,21 @@ public class MoveValidator {
         adjustedBoard.move(move.getFrom(), move.getTo());
 
         // check if the "playerWhoCanTakeKing" can now capture the King
-        Set<Move> followOnMoves = new HashSet<>();
-        adjustedBoard.getPieces(playerWhoCanTakeKing).forEach(piece -> followOnMoves.addAll(piece.potentialMoves()));
+        return adjustedBoard.getPieces(playerWhoCanTakeKing).stream()
+                .map(Piece::potentialMoves)
+                .flatMap(Collection::stream)
+                .anyMatch(followOnMove -> {
+                    MoveResponse moveValidation = validateRules(
+                            new Context(followOnMove, playerWhoCanTakeKing, playerWhoCanTakeKing, adjustedBoard),
+                            // excluding invalidExposeCheck to stop unwanted recursion
+                            ALL_RULES_EX_EXPOSE_CHECK);
 
-        for (Move followOnMove : followOnMoves) {
-
-            MoveResponse moveValidation = validateRules(
-                    new Context(followOnMove, playerWhoCanTakeKing, playerWhoCanTakeKing, adjustedBoard),
-                    // These are all the ALL_VALIDATIONS, but excluding invalidExposeCheck to stop unwanted recursion
-                    Arrays.asList(
-                            MoveValidator::wrongPlayer,
-                            MoveValidator::noPiece,
-                            MoveValidator::wrongColour,
-                            MoveValidator::invalidToSquare,
-                            MoveValidator::invalidPieceMove,
-                            MoveValidator::invalidPieceBlocking));
-
-            if (moveValidation.isOK() && moveValidation.getPieceCaptured().isPresent()) {
-                Piece pieceCaptured = moveValidation.getPieceCaptured().get();
-                if (pieceCaptured.equals(King.buildKing(Colour.otherColour(playerWhoCanTakeKing)))) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+                    if (moveValidation.isOK() && moveValidation.getPieceCaptured().isPresent()) {
+                        Piece pieceCaptured = moveValidation.getPieceCaptured().get();
+                        return pieceCaptured.equals(King.buildKing(Colour.otherColour(playerWhoCanTakeKing)));
+                    }
+                    return false;
+                });
     }
 
     private static boolean moveEndsGame(Context context) {

@@ -291,7 +291,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.E, Row.SEVEN), Square.at(Column.D, Row.SEVEN));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN check
         assertThat(response.isOK()).isTrue();
