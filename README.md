@@ -6,8 +6,10 @@ In future more sophisticated computerised players will be developed.
 
 # Motivation
 
-To demonstrate the author's most familiar style of programming - Java in the classical object-oriented style.  The 
-game of chess is concise enough to capture the rules and knock up a rudimentary 'app' with a short period of time.  But
+To demonstrate the author's most familiar style of programming - Java in the classical object-oriented style.  With usage
+of Java 8 functional idioms where it feels advantageous.  
+
+The game of chess is concise enough to capture the rules and knock up a rudimentary 'app' with a short period of time.  But
 provides significant depth to try out more advanced concepts.
 
 Additionally the author would like to improve his chess playing abilities!
@@ -17,7 +19,7 @@ Additionally the author would like to improve his chess playing abilities!
 - Unit tests: Junit testing is provided, with fluent assertions.  Most attention is made to the game rules.  Line 
 coverage is around 90%.
 - Java 8's 'Optional' is used to avoid null references.
-- Java 8's functional idioms - lambda expressions, functional interfaces, Streams
+- Java 8's functional idioms - lambda expressions, functional interfaces, Streams, e.g.[MoveValidator.java](https://github.com/chenery/chive-chess/blob/master/src/main/java/chenery/chive/MoveValidator.java).
 - Static factory methods for object construction to reduce the verbosity of creating 'new' objects.
 - Builder methods for more complex classes that require more granular control, e.g. MoveBuilder, ArrayBasedBoard 
 - ...
@@ -43,4 +45,3 @@ coverage is around 90%.
 # Other Considerations
 
 - Upgrade to Java 9/10/11
-- Change MoveValidator to BoardValidator?

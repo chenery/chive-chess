@@ -36,7 +36,7 @@ public class Game {
 
         // setup a moveContext that can be used to determine the validity of the move
         MoveContext moveContext = new MoveContext(forColour, move);
-        MoveResponse moveResponse = new MoveValidator().validate(move, forColour, nextToMove, board);
+        MoveResponse moveResponse = MoveValidator.validate(move, forColour, nextToMove, board);
 
         if (moveResponse.isInvalid()) {
             return moveResponse;

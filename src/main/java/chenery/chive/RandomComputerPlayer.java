@@ -14,7 +14,7 @@ public class RandomComputerPlayer {
 
     public Move selectMove(Colour forColour, Board board) {
 
-        List<Move> possibleMoves = new ArrayList<>(new MoveValidator().validMoves(forColour, board));
+        List<Move> possibleMoves = new ArrayList<>(MoveValidator.validMoves(forColour, board));
 
         if (possibleMoves.size() == 0) {
             // todo handle the end game state

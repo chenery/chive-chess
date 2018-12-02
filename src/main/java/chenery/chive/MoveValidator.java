@@ -20,12 +20,25 @@ import java.util.stream.Collectors;
  *
  *  Individual rules or validations are provided as individual methods rather than a larger method with many conditional
  *  statements. These rules must be written in the format of accepting a Context object and returning a MoveResponse.
+ *  This allows the validateRules method to iterate over the "rules" and test all are "OK".
  */
 public class MoveValidator {
 
+    /**
+     * Run all checks/rules against this move for the board.
+     * If the MoveResponse is valid, then this move is allowable.
+     *
+     * @param move The move in question
+     * @param byColour The move being made by this colour
+     * @param nextToMove The player who is next to made - here simply to check for wrong player moving
+     * @param board The state of the board
+     * @return A MoveResponse that will explain if the move is valid or invalid, and subsequent game state
+     */
     public static MoveResponse validate(Move move, Colour byColour, Colour nextToMove, Board board) {
-        List<Function<Context, MoveResponse>> allChecks = new ArrayList<>(VALIDATIONS);
-        allChecks.addAll(GAME_STATUS_CHECKS);
+
+        List<Function<Context, MoveResponse>> allChecks = new ArrayList<>(ALL_VALIDATIONS);
+        allChecks.add(MoveValidator::validCheckOrEndGame);
+
         return validateRules(new Context(move, byColour, nextToMove, board), allChecks);
     }
 
@@ -40,13 +53,14 @@ public class MoveValidator {
         Set<Move> moves = new HashSet<>();
         board.getPieces(forColour).forEach(piece -> moves.addAll(piece.potentialMoves()));
 
-        // We don't need to test for checkmate or stalemate to say whether a move is valid
+        // We don't need to test for checkmate or stalemateOrCheck to say whether a move is valid
         return moves.stream()
-                .filter(move -> validateRules(new Context(move, forColour, forColour, board), VALIDATIONS).isOK())
+                .filter(move -> validateRules(new Context(move, forColour, forColour, board), ALL_VALIDATIONS).isOK())
                 .collect(Collectors.toSet());
     }
 
-    private static final List<Function<Context, MoveResponse>> VALIDATIONS = Arrays.asList(
+    // The complete set of validations that will produce an invalid MoveResponse
+    private static final List<Function<Context, MoveResponse>> ALL_VALIDATIONS = Arrays.asList(
             MoveValidator::wrongPlayer,
             MoveValidator::noPiece,
             MoveValidator::wrongColour,
@@ -55,12 +69,7 @@ public class MoveValidator {
             MoveValidator::invalidPieceBlocking,
             MoveValidator::invalidExposeCheck);
 
-    private static final List<Function<Context, MoveResponse>> GAME_STATUS_CHECKS = Arrays.asList(
-            MoveValidator::checkmate,
-            MoveValidator::stalemate);
-
     /**
-     *
      * @param context State required to validate the move
      * @param rules Sequence of rules that constitute the rules of the game.
      *              Each rule is modelled by a function that accepts the context and returns a MoveResponse
@@ -154,35 +163,15 @@ public class MoveValidator {
         return MoveResponse.ok();
     }
 
-    private static MoveResponse checkmate(Context context) {
-        // todo only check for 'check' once here
+    private static MoveResponse validCheckOrEndGame(Context context) {
+
         final boolean isPlayerInCheck = isPlayerInCheck(context.getMove(), context.getByColour(), context.getBoard());
 
-        // ... as check is a precondition of checkmate
-        if (isCheckMate(isPlayerInCheck, context.getMove(), context.getByColour(), context.getBoard())) {
-            return MoveResponse.checkmate();
+        if (moveEndsGame(context)) {
+            return isPlayerInCheck ? MoveResponse.checkmate() : MoveResponse.stalemate();
         }
 
-        // todo these could be Optional.empty()?
-        return MoveResponse.ok();
-    }
-
-    private static MoveResponse stalemate(Context context) {
-        // todo only check for 'check' once here
-        final boolean isPlayerInCheck = isPlayerInCheck(context.getMove(), context.getByColour(), context.getBoard());
-
-        // todo handle testForStaleMate
-        if (isStaleMate(isPlayerInCheck, context.getMove(), context.getByColour(), context.getBoard())) {
-            return MoveResponse.stalemate();
-        }
-
-        // test if moving player 'checks' opponent
-        if (isPlayerInCheck) {
-            return MoveResponse.check();
-        }
-
-        // todo these should be Optional.empty()
-        return MoveResponse.ok();
+        return isPlayerInCheck ? MoveResponse.check() : MoveResponse.ok();
     }
 
     private static Optional<Piece> pieceCaptured(Context context) {
@@ -203,7 +192,7 @@ public class MoveValidator {
 
             MoveResponse moveValidation = validateRules(
                     new Context(followOnMove, playerWhoCanTakeKing, playerWhoCanTakeKing, adjustedBoard),
-                    // These are all the VALIDATIONS, but excluding invalidExposeCheck to stop unwanted recursion
+                    // These are all the ALL_VALIDATIONS, but excluding invalidExposeCheck to stop unwanted recursion
                     Arrays.asList(
                             MoveValidator::wrongPlayer,
                             MoveValidator::noPiece,
@@ -223,37 +212,22 @@ public class MoveValidator {
         return false;
     }
 
-    private static boolean isCheckMate(boolean isInCheck, Move move, Colour byColour, Board board) {
-
-        // check is a precondition of checkmate
-        if (!isInCheck) {
-            return false;
-        }
+    private static boolean moveEndsGame(Context context) {
 
         // make the move
-        Board adjustedBoard = board.clone();
-        adjustedBoard.move(move.getFrom(), move.getTo());
+        Board adjustedBoard = context.getBoard().clone();
+        adjustedBoard.move(context.getMove().getFrom(), context.getMove().getTo());
 
-        // if there are no valid moves for other colour, and in check, it's checkmate
-        return validMoves(Colour.otherColour(byColour), adjustedBoard).isEmpty();
+        // if there are no valid moves for other colour
+        return validMoves(Colour.otherColour(context.getByColour()), adjustedBoard).isEmpty();
     }
 
-    private static boolean isStaleMate(boolean isInCheck, Move move, Colour byColour, Board board) {
-
-        // no check is a precondition of stalemate
-        if (isInCheck) {
-            return false;
-        }
-
-        // make the move
-        Board adjustedBoard = board.clone();
-        adjustedBoard.move(move.getFrom(), move.getTo());
-
-        // if there are no valid moves for other colour, and not in check, it's stalemate
-        return validMoves(Colour.otherColour(byColour), adjustedBoard).isEmpty();
-    }
-
-    // attributes that are used to determine if the move is validate
+    /**
+     *  Attributes that are used to determine if the move is validate.
+     *
+     *  Static nested class so that static methods of the outer class (MoveValidator) can instantiate Context.
+     *  Private as only used by MoveValidator.
+     */
     private static class Context {
         private Move move;
         private Colour byColour;
