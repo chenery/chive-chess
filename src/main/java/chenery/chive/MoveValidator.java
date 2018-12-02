@@ -172,7 +172,13 @@ public class MoveValidator {
         if (moveEndsGame(context)) {
             return isPlayerInCheck ? MoveResponse.checkmate() : MoveResponse.stalemate();
         }
-        return isPlayerInCheck ? MoveResponse.check() : MoveResponse.ok();
+
+        if (isPlayerInCheck) {
+            return MoveResponse.check();
+        }
+
+        return context.getBoard().hasInsufficientMaterial() ? MoveResponse.drawInsufficientMaterial()
+                : MoveResponse.ok();
     }
 
     private static Optional<Piece> pieceCaptured(Context context) {

@@ -27,16 +27,18 @@ import java.util.Optional;
  */
 public interface Board extends Cloneable {
 
-    Square WHITE_KING_SQUARE = new Square(Column.E, Row.ONE);
-    Square BLACK_KING_SQUARE = new Square(Column.E, Row.EIGHT);
-    Square WHITE_QUEEN_SQUARE = new Square(Column.D, Row.ONE);
-    Square BLACK_QUEEN_SQUARE = new Square(Column.D, Row.EIGHT);
+    Square WHITE_KING_SQUARE = Square.at(Column.E, Row.ONE);
+    Square BLACK_KING_SQUARE = Square.at(Column.E, Row.EIGHT);
+    Square WHITE_QUEEN_SQUARE = Square.at(Column.D, Row.ONE);
+    Square BLACK_QUEEN_SQUARE = Square.at(Column.D, Row.EIGHT);
 
     Optional<Piece> getPiece(Square at);
 
     List<Piece> getPieces(Colour forColour);
 
     void move(Square from, Square to);
+
+    boolean hasInsufficientMaterial();
 
     void print();
 

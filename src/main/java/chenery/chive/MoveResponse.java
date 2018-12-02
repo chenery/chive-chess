@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import static chenery.chive.MoveResponse.Status.CHECK;
 import static chenery.chive.MoveResponse.Status.CHECKMATE;
+import static chenery.chive.MoveResponse.Status.DRAW;
 import static chenery.chive.MoveResponse.Status.INVALID;
 import static chenery.chive.MoveResponse.Status.INVALID_EXPOSE_CHECK;
 import static chenery.chive.MoveResponse.Status.INVALID_NO_PIECE;
@@ -32,7 +33,8 @@ public class MoveResponse {
         INVALID_EXPOSE_CHECK,
         CHECK,
         CHECKMATE,
-        STALEMATE };
+        STALEMATE,
+        DRAW};
 
     private Status status;
     private String message;
@@ -94,6 +96,11 @@ public class MoveResponse {
                 .withMessage("Stalemate!'");
     }
 
+    public static MoveResponse drawInsufficientMaterial() {
+        return new MoveResponse(Status.DRAW)
+                .withMessage("Draw - insufficiant material!'");
+    }
+
     public MoveResponse withMessage(String message) {
         this.message = message;
         return this;
@@ -128,7 +135,14 @@ public class MoveResponse {
         return status == OK
                 || status == CHECK
                 || status == CHECKMATE
-                || status == STALEMATE;
+                || status == STALEMATE
+                || status == DRAW;
+    }
+
+    public boolean isGameOver() {
+        return status == CHECKMATE
+                || status == STALEMATE
+                || status == DRAW;
     }
 
     public Optional<Piece> getPieceCaptured() {

@@ -2,7 +2,6 @@ package chenery.chive;
 
 
 /**
- * todo allow different variants of the game, rather than just against the computer
  *
  */
 public class Game {
@@ -12,24 +11,24 @@ public class Game {
     private Player black;
     private GameHistory history;
     private Colour nextToMove;
-    private RandomComputerPlayer randomComputerPlayer;
 
-    public Game() {
-        // setup all the pieces on the board
-        board = new ArrayBasedBoard().setUpAllPieces();
-
-        // setup the players
-        white = new Player(Colour.WHITE);
-        black = new Player(Colour.BLACK);
+    private Game(Player white, Player black, Board board) {
+        this.white = white;
+        this.black = black;
+        this.board = board;
         nextToMove = Colour.WHITE;
-
         history = new GameHistory();
-        randomComputerPlayer = new RandomComputerPlayer();
     }
 
-    public MoveResponse computerToSelectMove(Colour colour) {
-        return move(colour,
-                randomComputerPlayer.selectMove(colour, board));
+    public static Game singlePlayerGame() {
+        Board board = new ArrayBasedBoard().setUpAllPieces();
+        return new Game(new UserPlayer(Colour.WHITE), new RandomComputerPlayer(Colour.BLACK, board), board);
+    }
+
+    public static Game twoComputersGame() {
+        Board board = new ArrayBasedBoard().setUpAllPieces();
+        return new Game(new RandomComputerPlayer(Colour.WHITE, board),
+                new RandomComputerPlayer(Colour.BLACK, board), board);
     }
 
     public MoveResponse move(Colour forColour, Move move) {
@@ -61,6 +60,10 @@ public class Game {
         return nextToMove;
     }
 
+    public Player getNextPlayerToMove() {
+        return getNextToMove() == Colour.WHITE ? getWhite() : getBlack();
+    }
+
     public Player getWhite() {
         return white;
     }
@@ -69,7 +72,7 @@ public class Game {
         return black;
     }
 
-    public static void main(String[] args) {
-        Game game = new Game();
+    public GameHistory getHistory() {
+        return history;
     }
 }

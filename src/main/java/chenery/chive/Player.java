@@ -3,14 +3,9 @@ package chenery.chive;
 /**
  *
  */
-public class Player {
-    private Colour colour;
+public interface Player {
 
-    public Player(Colour colour) {
-        this.colour = colour;
-    }
+    Colour getColour();
 
-    public Colour getColour() {
-        return colour;
-    }
+    Move selectMove();
 }

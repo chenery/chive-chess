@@ -13,7 +13,7 @@ public class GameTest {
     @Test
     public void construct_new_game() {
 
-        Game game = new Game();
+        Game game = Game.singlePlayerGame();
         assertThat(game).isNotNull();
 
         Player white = game.getWhite();
@@ -26,7 +26,7 @@ public class GameTest {
     @Test
     public void move_initialMove_ok() {
 
-        Game game = new Game();
+        Game game = Game.singlePlayerGame();
 
         MoveResponse moveResponse = game.move(Colour.WHITE, new Move(new Square(Column.D, Row.TWO),
                 new Square(Column.D, Row.THREE)));
@@ -37,7 +37,7 @@ public class GameTest {
     @Test
     public void move_initialMove_invalid() {
 
-        Game game = new Game();
+        Game game = Game.singlePlayerGame();
 
         MoveResponse moveResponse = game.move(Colour.WHITE, new Move(new Square(Column.D, Row.TWO),
                 new Square(Column.D, Row.FIVE)));

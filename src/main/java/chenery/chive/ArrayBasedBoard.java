@@ -121,6 +121,26 @@ public class ArrayBasedBoard implements Board {
         });
     }
 
+    @Override
+    public boolean hasInsufficientMaterial() {
+
+        // king against king
+        List<Piece> whitePieces = getPieces(Colour.WHITE);
+        List<Piece> blackPieces = getPieces(Colour.BLACK);
+
+        if (whitePieces.size() == 1 && whitePieces.get(0).equals(King.buildKing(Colour.WHITE))
+            && blackPieces.size() == 1 && blackPieces.get(0).equals(King.buildKing(Colour.BLACK))) {
+            return true;
+        }
+
+        // todo https://en.wikipedia.org/wiki/Rules_of_chess#Draws
+        // king against king and bishop;
+        // king against king and knight;
+        // king and bishop against king and bishop, with both bishops on squares of the same color
+
+        return false;
+    }
+
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
     private static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";

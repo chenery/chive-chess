@@ -16,4 +16,8 @@ public class GameHistory {
     public boolean isFirstMove(Colour forColour) {
         return moveContextHistory.size() < 2;
     }
+
+    public int numberOfMovesMade() {
+        return moveContextHistory.size();
+    }
 }

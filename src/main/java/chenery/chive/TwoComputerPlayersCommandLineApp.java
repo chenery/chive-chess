@@ -4,13 +4,13 @@ package chenery.chive;
  * A command line app that allows the user to play as white against the computer
  *
  */
-public class SinglePlayerCommandLineApp {
+public class TwoComputerPlayersCommandLineApp {
 
-    private Game game = Game.singlePlayerGame();
+    private Game game = Game.twoComputersGame();
 
     public static void main( String[] args ) {
 
-        SinglePlayerCommandLineApp app = new SinglePlayerCommandLineApp();
+        TwoComputerPlayersCommandLineApp app = new TwoComputerPlayersCommandLineApp();
 
         while(!app.executeMove().isGameOver());
     }
@@ -27,6 +27,7 @@ public class SinglePlayerCommandLineApp {
         if (response.isGameOver()) {
             game.printBoard();
             System.out.println("Game over: " + response.toString());
+            System.out.println(game.getHistory().numberOfMovesMade() + " moves made.");
         } else {
             System.out.println(player.getColour() + " player made move: " + response.toString());
         }

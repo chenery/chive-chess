@@ -21,7 +21,8 @@ coverage is around 90%.
 - Java 8's 'Optional' is used to avoid null references.
 - Java 8's functional idioms - lambda expressions, functional interfaces, Streams, e.g. [MoveValidator.java](https://github.com/chenery/chive-chess/blob/master/src/main/java/chenery/chive/MoveValidator.java).
 - Static factory methods for object construction to reduce the verbosity of creating 'new' objects.
-- Builder methods for more complex classes that require more granular control, e.g. MoveBuilder, ArrayBasedBoard 
+- Builder methods for more complex classes that require more granular control, e.g. [MoveBuilder.java](https://github.com/chenery/chive-chess/blob/master/src/main/java/chenery/chive/MovesBuilder.java), ArrayBasedBoard
+- Regex used to interpret user moves from keyboard, see [MoveParser](https://github.com/chenery/chive-chess/blob/master/src/main/java/chenery/chive/MoveParser.java) 
 - ...
 
 # Features Implemented
@@ -31,6 +32,7 @@ coverage is around 90%.
 
 # Features for the Future 
 
+- Draw due to insufficent material
 - Feedback chess game/move notation to user
 - Stalemate/draw, which is handled by the app
 - Castling

@@ -11,8 +11,10 @@ import org.junit.Test;
 import java.util.Set;
 
 import static chenery.chive.Board.BLACK_KING_SQUARE;
+import static chenery.chive.Board.WHITE_KING_SQUARE;
 import static chenery.chive.MoveResponse.Status.CHECK;
 import static chenery.chive.MoveResponse.Status.CHECKMATE;
+import static chenery.chive.MoveResponse.Status.DRAW;
 import static chenery.chive.MoveResponse.Status.INVALID_EXPOSE_CHECK;
 import static chenery.chive.MoveResponse.Status.INVALID_NO_PIECE;
 import static chenery.chive.MoveResponse.Status.INVALID_PIECE_BLOCKING;
@@ -312,7 +314,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.F, Row.SIX), Square.at(Column.G, Row.SIX));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN check
         assertThat(response.isOK()).isTrue();
@@ -326,9 +328,28 @@ public class MoveValidatorTest {
         Board board = new ArrayBasedBoard().setUpKing(Colour.WHITE);
 
         // WHEN get valid moves for this board for black player
-        Set<Move> validMoves = new MoveValidator().validMoves(Colour.WHITE, board);
+        Set<Move> validMoves = MoveValidator.validMoves(Colour.WHITE, board);
 
         // THEN there should be 6 possible moves
         assertThat(validMoves).hasSize(5);
+    }
+
+    @Test
+    public void validate_drawInsufficientMaterial_kings() {
+
+        // GIVEN board with insufficient material https://en.wikipedia.org/wiki/Rules_of_chess#Draws
+        Board board = new ArrayBasedBoard()
+                .setUpKing(Colour.WHITE)
+                .setUpKing(Colour.BLACK);
+
+        // AND a move for white that would normally be valid
+        Move move = new Move(WHITE_KING_SQUARE, Square.at(Column.E, Row.TWO));
+
+        // WHEN validate
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
+
+        // THEN check
+        assertThat(response.isOK()).isTrue();
+        assertThat(response.getStatus()).isEqualTo(DRAW);
     }
 }
