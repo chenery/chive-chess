@@ -22,12 +22,12 @@ public class Game {
 
     public static Game singlePlayerGame() {
         Board board = new ArrayBasedBoard().setUpAllPieces();
-        return new Game(new UserPlayer(Colour.WHITE), new RandomComputerPlayer(Colour.BLACK, board), board);
+        return new Game(new UserPlayer(Colour.WHITE), new HeuristicsBasedComputerPlayer(Colour.BLACK, board), board);
     }
 
     public static Game twoComputersGame() {
         Board board = new ArrayBasedBoard().setUpAllPieces();
-        return new Game(new RandomComputerPlayer(Colour.WHITE, board),
+        return new Game(new HeuristicsBasedComputerPlayer(Colour.WHITE, board),
                 new RandomComputerPlayer(Colour.BLACK, board), board);
     }
 

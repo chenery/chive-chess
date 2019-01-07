@@ -8,6 +8,8 @@ import chenery.chive.Square;
 
 import java.util.Set;
 
+import static chenery.chive.Config.CAPTURE_ROOK_VALUE;
+
 /**
  *
  */
@@ -33,6 +35,11 @@ public class Rook extends Piece {
                 .left()
                 .right()
                 .getMoves();
+    }
+
+    @Override
+    public int getPieceValue() {
+        return CAPTURE_ROOK_VALUE;
     }
 
     @Override

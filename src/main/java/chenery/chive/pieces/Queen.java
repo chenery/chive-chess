@@ -8,6 +8,10 @@ import chenery.chive.Square;
 
 import java.util.Set;
 
+import static chenery.chive.Board.BLACK_QUEEN_SQUARE;
+import static chenery.chive.Board.WHITE_QUEEN_SQUARE;
+import static chenery.chive.Config.CAPTURE_QUEEN_VALUE;
+
 /**
  *
  */
@@ -21,8 +25,16 @@ public class Queen extends Piece {
         return new Queen(Colour.WHITE, at);
     }
 
+    public static Queen white() {
+        return new Queen(Colour.WHITE, WHITE_QUEEN_SQUARE);
+    }
+
     public static Queen blackAt(Square at) {
         return new Queen(Colour.BLACK, at);
+    }
+
+    public static Queen black() {
+        return new Queen(Colour.BLACK, BLACK_QUEEN_SQUARE);
     }
 
     @Override
@@ -37,6 +49,11 @@ public class Queen extends Piece {
                 .backLeftDiagonal()
                 .backRightDiagonal()
                 .getMoves();
+    }
+
+    @Override
+    public int getPieceValue() {
+        return CAPTURE_QUEEN_VALUE;
     }
 
     @Override

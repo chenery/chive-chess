@@ -11,6 +11,8 @@ import chenery.chive.Row;
 
 import java.util.Set;
 
+import static chenery.chive.Config.CAPTURE_PAWN_VALUE;
+
 /**
  *  todo use composition rather than inheritance
  */
@@ -72,6 +74,11 @@ public class Pawn extends Piece {
                 .forwardLeftDiagonal(1)
                 .forwardRightDiagonal(1)
                 .getMoves();
+    }
+
+    @Override
+    public int getPieceValue() {
+        return CAPTURE_PAWN_VALUE;
     }
 
     /**

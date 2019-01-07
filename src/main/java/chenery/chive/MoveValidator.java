@@ -22,6 +22,8 @@ import static chenery.chive.MoveResponse.Status.OK;
  *  Individual rules or validations are provided as individual methods rather than a larger method with many conditional
  *  statements. These rules must be written in the format of accepting a Context object and returning a MoveResponse.
  *  This allows the validateRules method to iterate over the "rules" and test all are "OK".
+ *
+ *  todo convert to interface for readability
  */
 public class MoveValidator {
 
@@ -56,6 +58,23 @@ public class MoveValidator {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * As per validMoves, but returns the full moveResponse object, that supplies more information about the result
+     * of the move.
+     *
+     * @param forColour the colour making the move
+     * @param board the "game state" defined by the board
+     * @return a set of valid moves, will full MoveResponse object
+     */
+    public static Set<MoveResponse> validMoveResponses(Colour forColour, Board board) {
+        return board.getPieces(forColour).stream()
+                .map(Piece::potentialMoves)
+                .flatMap(Collection::stream)
+                .map(move -> validateRules(new Context(move, forColour, forColour, board), ALL_RULES))
+                .filter(MoveResponse::isOK)
+                .collect(Collectors.toSet());
+    }
+
     // The complete set of validations that will produce an invalid MoveResponse
     private static final List<Function<Context, MoveResponse>> ALL_RULES = Arrays.asList(
             MoveValidator::wrongPlayer,
@@ -85,7 +104,8 @@ public class MoveValidator {
 
         // The list of rules allows this generic evaluate of each rule, only if the previous was OK
         return rules.stream()
-                .map(rule -> rule.apply(context))
+                // Decorate the MoveResponse with the move
+                .map(rule -> rule.apply(context).withMove(context.getMove()))
                 .filter(moveResponse -> moveResponse.getStatus() != OK)
                 .findFirst()
                 .orElseGet(() -> {

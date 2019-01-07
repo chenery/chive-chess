@@ -2,6 +2,9 @@ package chenery.chive;
 
 import java.util.Optional;
 
+import static chenery.chive.Config.CHECK_VALUE;
+import static chenery.chive.Config.DRAW_VALUE;
+import static chenery.chive.Config.STALEMATE_VALUE;
 import static chenery.chive.MoveResponse.Status.CHECK;
 import static chenery.chive.MoveResponse.Status.CHECKMATE;
 import static chenery.chive.MoveResponse.Status.DRAW;
@@ -145,8 +148,37 @@ public class MoveResponse {
                 || status == DRAW;
     }
 
+    public int getMoveValue() {
+
+        if (status == CHECKMATE) {
+            return Integer.MAX_VALUE;
+        }
+
+        if (status == STALEMATE) {
+            return STALEMATE_VALUE;
+        }
+
+        if (status == DRAW) {
+            return DRAW_VALUE;
+        }
+
+        if (getPieceCaptured().isPresent()) {
+            return getPieceCaptured().get().getPieceValue();
+        }
+
+        if (status == CHECK) {
+            return CHECK_VALUE;
+        }
+
+        return 0;
+    }
+
     public Optional<Piece> getPieceCaptured() {
         return pieceCaptured != null ? Optional.of(pieceCaptured) : Optional.empty();
+    }
+
+    public Move getMove() {
+        return move;
     }
 
     @Override

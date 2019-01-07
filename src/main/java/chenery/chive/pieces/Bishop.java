@@ -8,6 +8,8 @@ import chenery.chive.Square;
 
 import java.util.Set;
 
+import static chenery.chive.Config.CAPTURE_BISHOP_VALUE;
+
 /**
  *
  */
@@ -33,6 +35,11 @@ public class Bishop extends Piece {
                 .backLeftDiagonal()
                 .backRightDiagonal()
                 .getMoves();
+    }
+
+    @Override
+    public int getPieceValue() {
+        return CAPTURE_BISHOP_VALUE;
     }
 
     @Override

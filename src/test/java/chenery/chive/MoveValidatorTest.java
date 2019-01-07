@@ -9,9 +9,11 @@ import chenery.chive.pieces.Rook;
 import org.junit.Test;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static chenery.chive.Board.BLACK_KING_SQUARE;
 import static chenery.chive.Board.WHITE_KING_SQUARE;
+import static chenery.chive.Config.CAPTURE_QUEEN_VALUE;
 import static chenery.chive.MoveResponse.Status.CHECK;
 import static chenery.chive.MoveResponse.Status.CHECKMATE;
 import static chenery.chive.MoveResponse.Status.DRAW;
@@ -54,7 +56,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.A, Row.TWO), Square.at(Column.A, Row.FOUR));
 
         // WHEN validate wrong player
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.BLACK, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.BLACK, board);
 
         // THEN invalid wrong player
         assertThat(response.isInvalid()).isTrue();
@@ -69,7 +71,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.A, Row.THREE), Square.at(Column.A, Row.FIVE));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN invalid
         assertThat(response.isInvalid()).isTrue();
@@ -84,7 +86,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.A, Row.SEVEN), Square.at(Column.A, Row.FIVE));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN invalid
         assertThat(response.isInvalid()).isTrue();
@@ -101,7 +103,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.A, Row.TWO), Square.at(Column.A, Row.THREE));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN invalid
         assertThat(response.isInvalid()).isTrue();
@@ -117,7 +119,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.A, Row.TWO), Square.at(Column.A, Row.FIVE));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN invalid
         assertThat(response.isInvalid()).isTrue();
@@ -136,7 +138,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.A, Row.TWO), Square.at(Column.A, Row.FOUR));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN invalid
         assertThat(response.isInvalid()).isTrue();
@@ -155,7 +157,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.A, Row.ONE), Square.at(Column.A, Row.EIGHT));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN invalid
         assertThat(response.isInvalid()).isTrue();
@@ -177,7 +179,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.B, Row.ONE), Square.at(Column.C, Row.THREE));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN ok
         assertThat(response.isOK()).isTrue();
@@ -194,7 +196,7 @@ public class MoveValidatorTest {
         Move move = new Move(BLACK_KING_SQUARE, Square.at(Column.E, Row.SEVEN));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.BLACK, Colour.BLACK, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.BLACK, Colour.BLACK, board);
 
         // THEN invalid
         assertThat(response.isInvalid()).isTrue();
@@ -211,7 +213,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.D, Row.SIX), Square.at(Column.D, Row.SEVEN));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN invalid
         assertThat(response.isOK()).isTrue();
@@ -233,7 +235,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.F, Row.SIX), Square.at(Column.G, Row.SEVEN));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN check
         assertThat(response.isOK()).isTrue();
@@ -253,7 +255,7 @@ public class MoveValidatorTest {
         Move move = new Move(Square.at(Column.G, Row.SEVEN), Square.at(Column.G, Row.EIGHT));
 
         // WHEN validate
-        MoveResponse response = new MoveValidator().validate(move, Colour.WHITE, Colour.WHITE, board);
+        MoveResponse response = MoveValidator.validate(move, Colour.WHITE, Colour.WHITE, board);
 
         // THEN check
         assertThat(response.isOK()).isTrue();
@@ -322,19 +324,6 @@ public class MoveValidatorTest {
     }
 
     @Test
-    public void validMoves_forBoardWithOnlyKing() {
-
-        // GIVEN a board with just a king
-        Board board = new ArrayBasedBoard().setUpKing(Colour.WHITE);
-
-        // WHEN get valid moves for this board for black player
-        Set<Move> validMoves = MoveValidator.validMoves(Colour.WHITE, board);
-
-        // THEN there should be 6 possible moves
-        assertThat(validMoves).hasSize(5);
-    }
-
-    @Test
     public void validate_drawInsufficientMaterial_kings() {
 
         // GIVEN board with insufficient material https://en.wikipedia.org/wiki/Rules_of_chess#Draws
@@ -351,5 +340,62 @@ public class MoveValidatorTest {
         // THEN check
         assertThat(response.isOK()).isTrue();
         assertThat(response.getStatus()).isEqualTo(DRAW);
+    }
+
+    @Test
+    public void validMoves_forBoardWithOnlyKing() {
+
+        // GIVEN a board with just a king
+        Board board = new ArrayBasedBoard().setUpKing(Colour.WHITE);
+
+        // WHEN get valid moves for this board for black player
+        Set<Move> validMoves = MoveValidator.validMoves(Colour.WHITE, board);
+
+        // THEN there should be 6 possible moves
+        assertThat(validMoves).hasSize(5);
+    }
+
+    @Test
+    public void validMoveResponses_moveValues_zeroValues() {
+
+        // GIVEN new game board
+        Board board = new ArrayBasedBoard().setUpAllPieces();
+
+        // WHEN valid move responses for White
+        Set<MoveResponse> moveResponses = MoveValidator.validMoveResponses(Colour.WHITE, board);
+
+        // THEN Can move pawns and knights
+        assertThat(moveResponses).hasSize(20);
+
+        // AND all moves have zero value
+        moveResponses.forEach(moveResponse -> assertThat(moveResponse.getMoveValue()).isZero());
+    }
+
+    @Test
+    public void validMoveResponses_moveValues_capturePiece() {
+
+        // GIVEN board for which WHITE can capture black queen
+        Board board = new ArrayBasedBoard()
+                .setUpPieces(
+                        King.black(),
+                        Queen.black(),
+                        King.white(),
+                        Queen.whiteAt(Square.at(Column.D, Row.FIVE)));
+
+        // WHEN valid move responses for White
+        Set<MoveResponse> moveResponses = MoveValidator.validMoveResponses(Colour.WHITE, board);
+        assertThat(moveResponses).hasSize(32);
+
+        // THEN all moves without captures have zero value, but capture has correct value
+        moveResponses.stream()
+                .filter(moveResponse -> !moveResponse.getPieceCaptured().isPresent())
+                .forEach(moveResponse -> assertThat(moveResponse.getMoveValue()).isZero());
+
+        Set<MoveResponse> captureResponses = moveResponses
+                .stream().filter(moveResponse -> moveResponse.getPieceCaptured().isPresent())
+                .collect(Collectors.toSet());
+
+        assertThat(captureResponses).hasSize(1);
+        assertThat(captureResponses.iterator().next().getMoveValue()).isEqualTo(CAPTURE_QUEEN_VALUE);
     }
 }

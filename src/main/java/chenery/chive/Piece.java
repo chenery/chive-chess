@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * todo A piece should move?
+ * todo create piece interface
  *
  *
  */
@@ -35,6 +35,8 @@ public abstract class Piece {
      * @return
      */
     public abstract Set<Move> potentialMoves();
+
+    public abstract int getPieceValue();
 
     public boolean canMove(MoveContext moveContext) {
         return potentialMoves().contains(moveContext.getMove());

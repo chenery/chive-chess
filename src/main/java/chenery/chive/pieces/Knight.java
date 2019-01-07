@@ -8,6 +8,8 @@ import chenery.chive.Square;
 
 import java.util.Set;
 
+import static chenery.chive.Config.CAPTURE_KNIGHT_VALUE;
+
 /**
  *
  */
@@ -37,6 +39,11 @@ public class Knight extends Piece {
                 .move(false, 2, false, 1)
                 .move(false, 1, false, 2)
                 .getMoves();
+    }
+
+    @Override
+    public int getPieceValue() {
+        return CAPTURE_KNIGHT_VALUE;
     }
 
     @Override

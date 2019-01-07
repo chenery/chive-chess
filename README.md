@@ -29,16 +29,16 @@ coverage is around 90%.
 
 - Basic rules of chess
 - Command line single player app
+- Draw due to insufficient material
+- Level 2 computer player that assigns a heuristic value to each possible next move and selects the best one.
 
 # Features for the Future 
 
-- Draw due to insufficent material
 - Feedback chess game/move notation to user
 - Stalemate/draw, which is handled by the app
 - Castling
 - Pawn promotion
 - Implement pawn en passant https://en.wikipedia.org/wiki/En_passant
-- Level 2 computer player that assigns a heuristic value to each possible next move and selects the best one.
 - Level 3 computer player uses minimax algorithm to consider the best option over a acceptable depth
 - Level 4 computer player uses minimax with alpha-beta pruning
 - Mechanism to allow computers to play each other
@@ -47,3 +47,31 @@ coverage is around 90%.
 # Other Considerations
 
 - Upgrade to Java 9/10/11
+
+# Heuristics based computer player (level 2)
+
+- Chooses the move with the highest move value
+- If two moves have equivalent score, one is selected at random
+
+## Move Value
+
+Based on:
+
+- Can checkmate
+- Try not to stalemate or draw
+- Captures a piece (each piece has value corresponding to type not position)
+
+To do:
+
+- A non-capturing move will attract value if it 'checks' an opponent piece, 
+especially so if that piece is not protected.
+- Any move will attract value if the to square is considered a 'good position'.  
+Initially this will be not be related to position of the pieces. 
+
+# TwoComputerPlayersCommandLineApp
+
+Pit the computer players against each other to test the player algorithms.
+
+Currently setup so HeuristicsBasedComputerPlayer plays white, and RandomComputerPlayer plays black.
+
+Best result seen for HeuristicsBasedComputerPlayer is checkmate in 81 moves.

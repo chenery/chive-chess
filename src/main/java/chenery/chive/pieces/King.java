@@ -29,6 +29,14 @@ public class King extends Piece {
         return buildKing(Colour.WHITE, at);
     }
 
+    public static King white() {
+        return buildKing(Colour.WHITE, WHITE_KING_SQUARE);
+    }
+
+    public static King black() {
+        return buildKing(Colour.BLACK, BLACK_KING_SQUARE);
+    }
+
     public static King blackAt(Square at) {
         return buildKing(Colour.BLACK, at);
     }
@@ -59,6 +67,11 @@ public class King extends Piece {
                 .backRightDiagonal(1)
                 // todo castling
                 .getMoves();
+    }
+
+    @Override
+    public int getPieceValue() {
+        throw new IllegalStateException("King has no value because it cannot be captured");
     }
 
     @Override
