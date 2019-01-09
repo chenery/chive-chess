@@ -10,6 +10,7 @@ import java.util.Set;
 
 import static chenery.chive.Board.BLACK_KING_SQUARE;
 import static chenery.chive.Board.WHITE_KING_SQUARE;
+import static chenery.chive.Config.CAPTURE_KING_VALUE;
 
 /**
  *
@@ -71,7 +72,7 @@ public class King extends Piece {
 
     @Override
     public int getPieceValue() {
-        throw new IllegalStateException("King has no value because it cannot be captured");
+        return CAPTURE_KING_VALUE;
     }
 
     @Override

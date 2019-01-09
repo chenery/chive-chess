@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 
 import static chenery.chive.Board.BLACK_KING_SQUARE;
 import static chenery.chive.Board.WHITE_KING_SQUARE;
+import static chenery.chive.Config.CAPTURE_PAWN_VALUE;
 import static chenery.chive.Config.CAPTURE_QUEEN_VALUE;
+import static chenery.chive.Config.CHECK_VALUE;
 import static chenery.chive.MoveResponse.Status.CHECK;
 import static chenery.chive.MoveResponse.Status.CHECKMATE;
 import static chenery.chive.MoveResponse.Status.DRAW;
@@ -224,14 +226,7 @@ public class MoveValidatorTest {
     public void validate_check_multiplePieces() {
 
         // GIVEN valid board for which a white move checks black
-        King blackKing = King.buildKing(Colour.BLACK, Square.at(Column.H, Row.EIGHT));
-        Pawn blackPawn = Pawn.blackAt(Square.at(Column.G, Row.SEVEN));
-
-        Pawn whitePawnF7 = Pawn.whiteAt(Square.at(Column.F, Row.SEVEN));
-        Pawn whitePawnF6 = Pawn.whiteAt(Square.at(Column.F, Row.SIX));
-        Pawn whitePawnG6 = Pawn.whiteAt(Square.at(Column.G, Row.SIX));
-
-        Board board = new ArrayBasedBoard().setUpPieces(blackKing, blackPawn, whitePawnF7, whitePawnF6, whitePawnG6);
+        Board board = BoardGenerator.whiteCanCheck();
         Move move = new Move(Square.at(Column.F, Row.SIX), Square.at(Column.G, Row.SEVEN));
 
         // WHEN validate
@@ -386,6 +381,27 @@ public class MoveValidatorTest {
         Set<MoveResponse> moveResponses = MoveValidator.validMoveResponses(Colour.WHITE, board);
         assertThat(moveResponses).hasSize(32);
 
+        // THEN capture has correct value
+        Set<MoveResponse> captureResponses = moveResponses
+                .stream().filter(moveResponse -> moveResponse.getPieceCaptured().isPresent())
+                .collect(Collectors.toSet());
+
+        assertThat(captureResponses).hasSize(1);
+        MoveResponse moveResponse = captureResponses.iterator().next();
+        assertThat(moveResponse.getStatus()).isEqualTo(CHECK);
+        assertThat(moveResponse.getMoveValue()).isEqualTo(CAPTURE_QUEEN_VALUE + CHECK_VALUE);
+    }
+
+    @Test
+    public void validMoveResponses_moveValues_check() {
+
+        // GIVEN board for which WHITE can check black
+        Board board = BoardGenerator.whiteCanCheck();
+
+        // WHEN valid move responses for White
+        Set<MoveResponse> moveResponses = MoveValidator.validMoveResponses(Colour.WHITE, board);
+        assertThat(moveResponses).hasSize(2);
+
         // THEN all moves without captures have zero value, but capture has correct value
         moveResponses.stream()
                 .filter(moveResponse -> !moveResponse.getPieceCaptured().isPresent())
@@ -396,6 +412,6 @@ public class MoveValidatorTest {
                 .collect(Collectors.toSet());
 
         assertThat(captureResponses).hasSize(1);
-        assertThat(captureResponses.iterator().next().getMoveValue()).isEqualTo(CAPTURE_QUEEN_VALUE);
+        assertThat(captureResponses.iterator().next().getMoveValue()).isEqualTo(CAPTURE_PAWN_VALUE + CHECK_VALUE);
     }
 }

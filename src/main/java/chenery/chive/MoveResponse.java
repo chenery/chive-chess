@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import static chenery.chive.Config.CHECK_VALUE;
 import static chenery.chive.Config.DRAW_VALUE;
+import static chenery.chive.Config.NEXT_MOVE_FACTOR;
 import static chenery.chive.Config.STALEMATE_VALUE;
 import static chenery.chive.MoveResponse.Status.CHECK;
 import static chenery.chive.MoveResponse.Status.CHECKMATE;
@@ -43,6 +44,9 @@ public class MoveResponse {
     private String message;
     private Move move;
     private Piece pieceCaptured;
+    private MoveResponse bestOpponentRetort;
+    private MoveResponse bestNextMove;
+    private MoveResponse bestOpponentNextMove;
 
     public MoveResponse(Status status) {
         this.status = status;
@@ -101,7 +105,7 @@ public class MoveResponse {
 
     public static MoveResponse drawInsufficientMaterial() {
         return new MoveResponse(Status.DRAW)
-                .withMessage("Draw - insufficiant material!'");
+                .withMessage("Draw - insufficient material!'");
     }
 
     public MoveResponse withMessage(String message) {
@@ -116,6 +120,21 @@ public class MoveResponse {
 
     public MoveResponse withPieceCaptured(Piece pieceCaptured) {
         this.pieceCaptured = pieceCaptured;
+        return this;
+    }
+
+    public MoveResponse withBestNextMove(MoveResponse bestNextMove) {
+        this.bestNextMove = bestNextMove;
+        return this;
+    }
+
+    public MoveResponse withBestOpponentRetort(MoveResponse bestOpponentRetort) {
+        this.bestOpponentRetort = bestOpponentRetort;
+        return this;
+    }
+
+    public MoveResponse withBestOpponentNextMove(MoveResponse bestOpponentNextMove) {
+        this.bestOpponentNextMove = bestOpponentNextMove;
         return this;
     }
 
@@ -150,6 +169,8 @@ public class MoveResponse {
 
     public int getMoveValue() {
 
+        int value = 0;
+
         if (status == CHECKMATE) {
             return Integer.MAX_VALUE;
         }
@@ -162,15 +183,42 @@ public class MoveResponse {
             return DRAW_VALUE;
         }
 
-        if (getPieceCaptured().isPresent()) {
-            return getPieceCaptured().get().getPieceValue();
-        }
-
         if (status == CHECK) {
-            return CHECK_VALUE;
+            value += CHECK_VALUE;
         }
 
-        return 0;
+        if (getPieceCaptured().isPresent()) {
+            value += getPieceCaptured().get().getPieceValue();
+        }
+
+        return value;
+    }
+
+    /**
+     * The value attributed to this move, the best opponent retort, and the best next move for this player
+     * @return integer value for move
+     */
+    public int getCombinedMoveValue() {
+        // The value of this move
+        int combinedValue = getMoveValue();
+
+        // minus the value of the likely response made by the opponent
+        if (getBestOpponentRetort().isPresent()) {
+            combinedValue -= getBestOpponentRetort().get().getMoveValue();
+        }
+
+        // plus the value from the follow-on move,
+        // reduced by the NEXT_MOVE_FACTOR to represent the uncertainty of this outcome
+        if (getBestNextMove().isPresent()) {
+            combinedValue += NEXT_MOVE_FACTOR * getBestNextMove().get().getMoveValue();
+        }
+
+        // minus the value of the likely response made by the opponent
+        if (getBestOpponentNextMove().isPresent()) {
+            combinedValue -= NEXT_MOVE_FACTOR * getBestOpponentNextMove().get().getMoveValue();
+        }
+
+        return combinedValue;
     }
 
     public Optional<Piece> getPieceCaptured() {
@@ -179,6 +227,18 @@ public class MoveResponse {
 
     public Move getMove() {
         return move;
+    }
+
+    public Optional<MoveResponse> getBestOpponentRetort() {
+        return bestOpponentRetort != null ? Optional.of(bestOpponentRetort) : Optional.empty();
+    }
+
+    public Optional<MoveResponse> getBestNextMove() {
+        return bestNextMove != null ? Optional.of(bestNextMove) : Optional.empty();
+    }
+
+    public Optional<MoveResponse> getBestOpponentNextMove() {
+        return bestOpponentNextMove != null ? Optional.of(bestOpponentNextMove) : Optional.empty();
     }
 
     @Override

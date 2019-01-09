@@ -60,13 +60,17 @@ Based on:
 - Can checkmate
 - Try not to stalemate or draw
 - Captures a piece (each piece has value corresponding to type not position)
+- The move will lead to a better result 1 move in the future
 
 To do:
 
+- a move that evades capture should attract value
+- Any move will attract value if the to square is protected by one of it's own pieces
 - A non-capturing move will attract value if it 'checks' an opponent piece, 
 especially so if that piece is not protected.
 - Any move will attract value if the to square is considered a 'good position'.  
 Initially this will be not be related to position of the pieces. 
+
 
 # TwoComputerPlayersCommandLineApp
 
@@ -74,4 +78,12 @@ Pit the computer players against each other to test the player algorithms.
 
 Currently setup so HeuristicsBasedComputerPlayer plays white, and RandomComputerPlayer plays black.
 
-Best result seen for HeuristicsBasedComputerPlayer is checkmate in 81 moves.
+Best result seen for HeuristicsBasedComputerPlayer is checkmate in 13 moves, by moving the rook ahead and across.
+
+- Todo run 1000 games and work out average victories and moves to victory.
+
+# Performance Optimizations
+
+- Most of the time is in validCheckOrEndGame and moveEndsGame(), and invalidExposeCheck - isPlayerInCheck, potentialMoves
+- Cache the potentialMoves() calls.  There can be millions of calls to this method for single move analysis.  
+And the potential moves are invariant of the position of the pieces. 

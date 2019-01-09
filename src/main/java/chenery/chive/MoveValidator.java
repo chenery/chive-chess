@@ -38,9 +38,7 @@ public class MoveValidator {
      * @return A MoveResponse that will explain if the move is valid or invalid, and subsequent game state
      */
     public static MoveResponse validate(Move move, Colour byColour, Colour nextToMove, Board board) {
-        List<Function<Context, MoveResponse>> allChecks = new ArrayList<>(ALL_RULES);
-        allChecks.add(MoveValidator::validCheckOrEndGame);
-        return validateRules(new Context(move, byColour, nextToMove, board), allChecks);
+        return validateRules(new Context(move, byColour, nextToMove, board), allRulesPlusEndGame());
     }
 
     /**
@@ -70,7 +68,7 @@ public class MoveValidator {
         return board.getPieces(forColour).stream()
                 .map(Piece::potentialMoves)
                 .flatMap(Collection::stream)
-                .map(move -> validateRules(new Context(move, forColour, forColour, board), ALL_RULES))
+                .map(move -> validateRules(new Context(move, forColour, forColour, board), allRulesPlusEndGame()))
                 .filter(MoveResponse::isOK)
                 .collect(Collectors.toSet());
     }
@@ -94,6 +92,12 @@ public class MoveValidator {
             MoveValidator::invalidPieceMove,
             MoveValidator::invalidPieceBlocking);
 
+    private static List<Function<Context, MoveResponse>> allRulesPlusEndGame() {
+        List<Function<Context, MoveResponse>> allChecks = new ArrayList<>(ALL_RULES);
+        allChecks.add(MoveValidator::validCheckOrEndGame);
+        return allChecks;
+    }
+
     /**
      * @param context State required to validate the move
      * @param rules Sequence of rules that constitute the rules of the game.
@@ -103,17 +107,15 @@ public class MoveValidator {
     private static MoveResponse validateRules(Context context, List<Function<Context, MoveResponse>> rules) {
 
         // The list of rules allows this generic evaluate of each rule, only if the previous was OK
-        return rules.stream()
+        MoveResponse response = rules.stream()
                 // Decorate the MoveResponse with the move
                 .map(rule -> rule.apply(context).withMove(context.getMove()))
                 .filter(moveResponse -> moveResponse.getStatus() != OK)
                 .findFirst()
-                .orElseGet(() -> {
-                    // Decorate the OK with the piece captured
-                    MoveResponse okResponse = MoveResponse.ok().withMove(context.getMove());
-                    Optional<Piece> capture = pieceCaptured(context);
-                    return capture.isPresent() ? okResponse.withPieceCaptured(capture.get()) : okResponse;
-                });
+                .orElseGet(() -> MoveResponse.ok().withMove(context.getMove()));
+        // Decorate the response with the piece captured
+        pieceCaptured(context).ifPresent(response::withPieceCaptured);
+        return response;
     }
 
     private static MoveResponse wrongPlayer(Context context) {
