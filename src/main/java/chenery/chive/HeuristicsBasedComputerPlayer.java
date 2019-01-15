@@ -67,33 +67,6 @@ public class HeuristicsBasedComputerPlayer implements Player {
         });
 
         MoveResponse response = getBestMoveResponse(validMoveResponses);
-        board.move(response.getMove().getFrom(), response.getMove().getTo());
-        System.out.println("Best move: " + response.getMove() + " " + response.getCombinedMoveValue() + " (combined), "
-                + response.getMoveValue() + " " + response.getStatus());
-        board.print();
-
-        response.getBestOpponentRetort().ifPresent(bestOpponentRetort -> {
-            board.move(bestOpponentRetort.getMove().getFrom(), bestOpponentRetort.getMove().getTo());
-            System.out.println("Best opponent move: " + bestOpponentRetort.getMove() + " "
-                    + bestOpponentRetort.getMoveValue() + " "
-                    + bestOpponentRetort.getStatus());
-            board.print();
-        });
-
-        response.getBestNextMove().ifPresent(bestNextMove -> {
-            board.move(bestNextMove.getMove().getFrom(), bestNextMove.getMove().getTo());
-            System.out.println("Best next move: " + bestNextMove.getMove() + " " + bestNextMove.getMoveValue() + " "
-                    + bestNextMove.getStatus());
-            board.print();
-        });
-
-        response.getBestOpponentNextMove().ifPresent(bestNextMove -> {
-            board.move(bestNextMove.getMove().getFrom(), bestNextMove.getMove().getTo());
-            System.out.println("Best opponent next move: " + bestNextMove.getMove() + " " + bestNextMove.getMoveValue() + " "
-                    + bestNextMove.getStatus());
-            board.print();
-        });
-
 
         return response.getMove();
     }
