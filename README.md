@@ -1,8 +1,8 @@
 # Chive Chess
 
 The project captures the rules of chess, and provides a 'SinglePlayerCommandLineApp' from which the user can play 
-against computer players.  The initial computer player, 'RandomComputerPlayer' does only what is says on the tin.
-In future more sophisticated computerised players will be developed.
+against computer players.  The initial computer players, 'RandomComputerPlayer' & 'HeuristicsBasedComputerPlayer' provide basic competition.
+More sophisticated computerised players are in development.
 
 # Motivation
 
