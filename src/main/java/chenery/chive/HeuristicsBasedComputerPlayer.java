@@ -32,7 +32,7 @@ public class HeuristicsBasedComputerPlayer implements Player {
     @Override
     public Move selectMove() {
 
-        Set<MoveResponse> validMoveResponses = MoveValidator.validMoveResponses(colour, board);
+        Set<MoveResponse> validMoveResponses = MoveValidator.validMoveResponses(colour, board, true);
 
         validMoveResponses.forEach(moveResponse -> {
 
@@ -43,7 +43,7 @@ public class HeuristicsBasedComputerPlayer implements Player {
                 adjustedBoard.move(move.getFrom(), move.getTo());
 
                 Set<MoveResponse> opponentValidRetorts
-                        = MoveValidator.validMoveResponses(Colour.otherColour(colour), adjustedBoard);
+                        = MoveValidator.validMoveResponses(Colour.otherColour(colour), adjustedBoard, true);
                 MoveResponse bestOpponentRetort = getBestMoveResponse(opponentValidRetorts);
                 moveResponse.withBestOpponentRetort(bestOpponentRetort);
 
@@ -51,14 +51,14 @@ public class HeuristicsBasedComputerPlayer implements Player {
                     adjustedBoard.move(bestOpponentRetort.getMove().getFrom(), bestOpponentRetort.getMove().getTo());
                 }
 
-                Set<MoveResponse> thisPlayerValidNextMoves = MoveValidator.validMoveResponses(colour, adjustedBoard);
+                Set<MoveResponse> thisPlayerValidNextMoves = MoveValidator.validMoveResponses(colour, adjustedBoard, true);
                 MoveResponse bestNextMove = getBestMoveResponse(thisPlayerValidNextMoves);
                 moveResponse.withBestNextMove(bestNextMove);
 
                 adjustedBoard.move(bestNextMove.getMove().getFrom(), bestNextMove.getMove().getTo());
 
                 Set<MoveResponse> opponentValidNextMoves
-                        = MoveValidator.validMoveResponses(Colour.otherColour(colour), adjustedBoard);
+                        = MoveValidator.validMoveResponses(Colour.otherColour(colour), adjustedBoard, true);
                 MoveResponse bestOpponentNextMove = getBestMoveResponse(opponentValidNextMoves);
                 moveResponse.withBestOpponentNextMove(bestOpponentNextMove);
 

@@ -5,12 +5,14 @@ package chenery.chive;
  */
 public class MinimaxResult {
 
-    // todo do not hold a reference to the node, this could be a memory leak
-    private GameTreeNode gameTreeNode;
+    private Move move;
     private Integer overriddenValue;
+    private int value = 0;
 
     public MinimaxResult(GameTreeNode gameTreeNode) {
-        this.gameTreeNode = gameTreeNode;
+        // todo stuff out unchecked get()
+        this.move = gameTreeNode.getMove().get();
+        this.value = gameTreeNode.getValue();
     }
 
     public static MinimaxResult infinity(GameTreeNode gameTreeNode) {
@@ -37,15 +39,10 @@ public class MinimaxResult {
     }
 
     public int getValue() {
-        return overriddenValue != null ? overriddenValue : gameTreeNode.getValue();
+        return overriddenValue != null ? overriddenValue : this.value;
     }
 
     public Move getMove() {
-        return gameTreeNode.getMove();
-    }
-
-    public Board getBoard() {
-        // todo
-        return null;
+        return this.move;
     }
 }

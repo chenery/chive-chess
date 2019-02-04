@@ -2,6 +2,7 @@ package chenery.chive;
 
 import chenery.chive.pieces.King;
 import chenery.chive.pieces.Pawn;
+import chenery.chive.pieces.Rook;
 
 /**
  *  Test helper class to supply boards for testing
@@ -19,5 +20,14 @@ public class BoardGenerator {
 
         // Check move: new Move(Square.at(Column.F, Row.SIX), Square.at(Column.G, Row.SEVEN))
         return new ArrayBasedBoard().setUpPieces(blackKing, blackPawn, whitePawnF7, whitePawnF6, whitePawnG6);
+    }
+
+    public static Board whiteCheckMateKingRook() {
+        King blackKing = King.blackAt(Square.at(Column.D, Row.EIGHT));
+
+        King whiteKing = King.whiteAt(Square.at(Column.D, Row.SIX));
+        Rook whiteRook = Rook.whiteAt(Square.at(Column.G, Row.EIGHT));
+
+        return new ArrayBasedBoard().setUpPieces(blackKing, whiteKing, whiteRook);
     }
 }

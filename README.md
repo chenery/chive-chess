@@ -53,6 +53,20 @@ coverage is around 90%.
 - Chooses the move with the highest move value
 - If two moves have equivalent score, one is selected at random
 
+# Minimax - Heuristics based computer player (level 3)
+
+Conceptual change: 
+
+- No longer consider move value - but assign a value to boards for each player
+- So the heuristic function will simply accept board and player arguments, rather than board, player and move.
+
+Algorithm to select a move:
+
+- From the current position, build a move tree for all possible future moves up to a depth of d
+- The move tree will store the move and the resultant board
+- Execute the minimax algorithm with alpha beta pruning over the tree to work out which board position at depth d
+(or less if a terminal node) results in the best 'board' for the player 
+
 ## Move Value
 
 Based on:

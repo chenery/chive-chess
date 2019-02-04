@@ -2,12 +2,7 @@ package chenery.chive;
 
 import chenery.chive.pieces.King;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -48,12 +43,8 @@ public class MoveValidator {
      * @param board the "game state" defined by the board
      * @return a set of valid moves
      */
-    public static Set<Move> validMoves(Colour forColour, Board board) {
-        return board.getPieces(forColour).stream()
-                .map(Piece::potentialMoves)
-                .flatMap(Collection::stream)
-                .filter(move -> validateRules(new Context(move, forColour, forColour, board), ALL_RULES).isOK())
-                .collect(Collectors.toSet());
+    public static Set<Move> validMoves(Colour forColour, Board board, boolean gameOverCheck) {
+        return validMoveResponses(forColour, board, gameOverCheck).stream().map(MoveResponse::getMove).collect(Collectors.toSet());
     }
 
     /**
@@ -64,7 +55,13 @@ public class MoveValidator {
      * @param board the "game state" defined by the board
      * @return a set of valid moves, will full MoveResponse object
      */
-    public static Set<MoveResponse> validMoveResponses(Colour forColour, Board board) {
+    public static Set<MoveResponse> validMoveResponses(Colour forColour, Board board, boolean gameOverCheck) {
+
+        if (gameOverCheck && gameIsOver(forColour, board)) {
+            System.out.println("game over detected");
+            return Collections.EMPTY_SET;
+        }
+
         return board.getPieces(forColour).stream()
                 .map(Piece::potentialMoves)
                 .flatMap(Collection::stream)
@@ -238,7 +235,12 @@ public class MoveValidator {
         adjustedBoard.move(context.getMove().getFrom(), context.getMove().getTo());
 
         // if there are no valid moves for other colour
-        return validMoves(Colour.otherColour(context.getByColour()), adjustedBoard).isEmpty();
+        return gameIsOver(context.getByColour(), adjustedBoard);
+    }
+
+    // if there are no valid moves for other colour
+    private static boolean gameIsOver(Colour forPlayer, Board board) {
+        return validMoves(Colour.otherColour(forPlayer), board, false).isEmpty();
     }
 
     /**

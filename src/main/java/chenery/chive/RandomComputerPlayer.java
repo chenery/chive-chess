@@ -27,7 +27,7 @@ public class RandomComputerPlayer implements Player {
 
     @Override
     public Move selectMove() {
-        List<Move> possibleMoves = new ArrayList<>(MoveValidator.validMoves(colour, board));
+        List<Move> possibleMoves = new ArrayList<>(MoveValidator.validMoves(colour, board, true));
 
         if (possibleMoves.size() == 0) {
             // todo handle the end game state
